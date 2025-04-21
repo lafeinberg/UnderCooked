@@ -165,7 +165,7 @@ PlayerSettings:
   androidMaxAspectRatio: 2.1
   applicationIdentifier:
     Android: com.MasterChefs.UnderCookedVR
-    Standalone: com.DefaultCompany.UnderCookedVR
+    Standalone: com.MasterChefs.UnderCookedVR
   buildNumber:
     Standalone: 0
     VisionOS: 0
@@ -954,7 +954,7 @@ PlayerSettings:
   hmiLogStartupTiming: 0
   hmiCpuConfiguration: 
   apiCompatibilityLevel: 6
-  activeInputHandler: 1
+  activeInputHandler: 2
   windowsGamepadBackendHint: 0
   cloudProjectId: 
   framebufferDepthMemorylessMode: 0
