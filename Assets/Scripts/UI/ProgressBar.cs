@@ -6,7 +6,7 @@ using UnityEngine.UI;
 public class ProgressBar : MonoBehaviour
 {
     [SerializeField]
-    private Image ProgressBar;
+    private Image ProgressBarImage;
     [SerializeField]
     private float animationSpeed = 1f;
     [SerializeField]
@@ -27,7 +27,7 @@ public class ProgressBar : MonoBehaviour
     public void SetProgress(float targetProgress)
     {
 
-        if (targetProgress != ProgressBar.fillAmount)
+        if (targetProgress != ProgressBarImage.fillAmount)
         {
             if (AnimationCoroutine != null)
             {
@@ -41,18 +41,18 @@ public class ProgressBar : MonoBehaviour
     private IEnumerator AnimateProgress(float targetProgress)
     {
         float time = 0;
-        float startProgress = ProgressBar.fillAmount;
+        float startProgress = ProgressBarImage.fillAmount;
 
         while (time < 1)
         {
-            ProgressBar.fillAmount = Mathf.Lerp(startProgress, targetProgress, time);
+            ProgressBarImage.fillAmount = Mathf.Lerp(startProgress, targetProgress, time);
             time += Time.deltaTime * animationSpeed;
 
-            OnProgress?.Invoke(ProgressBar.fillAmount);
+            OnProgress?.Invoke(ProgressBarImage.fillAmount);
             yield return null;
         }
 
-        ProgressBar.fillAmount = targetProgress;
+        ProgressBarImage.fillAmount = targetProgress;
         OnProgress?.Invoke(targetProgress);
         OnCompleted?.Invoke();
     }
