@@ -10,13 +10,24 @@ public class LevelStats
     public float finalTime;
 }
 
-public class PlayerManager
+public class PlayerManager : MonoBehaviour
 {
     public string playerId;
     private Dictionary<int, LevelStats> levelStats = new();
+    private int currentInstructionIndex = 0;
+    private int currentLevel;
+
+    private GameManager gameManager;
+
+    void Start()
+    {
+        gameManager = FindObjectOfType<GameManager>();
+    }
 
     public void StartLevel(int levelNumber)
     {
+        currentLevel = levelNumber;
+
         if (!levelStats.ContainsKey(levelNumber))
         {
             levelStats[levelNumber] = new LevelStats
@@ -53,5 +64,28 @@ public class PlayerManager
 
         return null;
     }
+
+    public void OnPlayerAction(InstructionType actionType, string target)
+    {
+        var instruction = gameManager.GetInstruction(currentInstructionIndex);
+
+        if (instruction.type == actionType && instruction.targetObject == target)
+        {
+            Debug.Log($"player {playerId} completed: {instruction.description}");
+
+            currentInstructionIndex++;
+
+            if (currentInstructionIndex >= gameManager.GetInstructionCount())
+            {
+                Debug.Log($"player {playerId} completed level {currentLevel}");
+                // todo: trigger level complete player logic
+            }
+            else
+            {
+                Debug.Log($"Next step: {gameManager.GetInstruction(currentInstructionIndex).description}");
+            }
+        }
+    }
+
 }
 
