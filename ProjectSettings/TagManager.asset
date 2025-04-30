@@ -3,7 +3,16 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 2
-  tags: []
+  tags:
+  - Floor
+  - Anchor
+  - Destroyer
+  - Target
+  - Projectile
+  - PlayerHand
+  - Plate
+  - Ingredient
+  - IngredientSurface
   layers:
   - Default
   - TransparentFX
@@ -12,7 +21,7 @@ TagManager:
   - Water
   - UI
   - 
-  - 
+  - Mirror
   - 
   - 
   - Character
