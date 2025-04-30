@@ -13,8 +13,6 @@ public class GameManager : MonoBehaviour
 
     public int currentLevel = 1;
     private Dictionary<string, PlayerManager> players = new();
-    public InstructionSet currentLevelInstructions;
-    public InstructionProgressPanel instructionProgressPanel;
 
     void Awake()
     {
@@ -58,11 +56,6 @@ public class GameManager : MonoBehaviour
         {
             player.StartLevel(currentLevel);
         }
-        if (instructionProgressPanel != null && currentLevelInstructions != null)
-        {
-            instructionProgressPanel.SetupInstructions(currentLevelInstructions.instructions);
-        }
-        instructionProgressPanel.SetupInstructions(currentLevelInstructions.instructions);
 
         Debug.Log($"Level {currentLevel} started!");
     }
@@ -82,16 +75,5 @@ public class GameManager : MonoBehaviour
             var stats = player.Value.GetLevelStats(currentLevel);
             Debug.Log($"{player.Key} - Score: {stats.score}, Time: {stats.finalTime}");
         }
-        currentLevel++;
-    }
-
-    public Instruction GetInstruction(int index)
-    {
-        return currentLevelInstructions.instructions[index];
-    }
-
-    public int GetInstructionCount()
-    {
-        return currentLevelInstructions.instructions.Count;
     }
 }
