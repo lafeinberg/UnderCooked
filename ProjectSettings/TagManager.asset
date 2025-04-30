@@ -10,6 +10,9 @@ TagManager:
   - Target
   - Projectile
   - PlayerHand
+  - Plate
+  - Ingredient
+  - IngredientSurface
   layers:
   - Default
   - TransparentFX
