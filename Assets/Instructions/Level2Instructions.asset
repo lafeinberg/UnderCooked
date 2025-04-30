@@ -12,3 +12,82 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 861186e60d03b438097111688ad9777a, type: 3}
   m_Name: Level2Instructions
   m_EditorClassIdentifier: 
+  instructions:
+  - description: 'Grab a lettuce head '
+    type: 1
+    targetObject: 
+  - description: Take lettuce to chopping board and drop
+    type: 0
+    targetObject: 
+  - description: Grab the knife
+    type: 1
+    targetObject: 
+  - description: Chop the lettuce
+    type: 2
+    targetObject: 
+  - description: Drop the knife on the chopping board
+    type: 0
+    targetObject: 
+  - description: Grab a tomato
+    type: 1
+    targetObject: 
+  - description: Take tomato to chopping board and drop
+    type: 2
+    targetObject: 
+  - description: Chop the tomato
+    type: 2
+    targetObject: Tomato
+  - description: Drop the knife on the chopping board
+    type: 0
+    targetObject: Board
+  - description: Grab an onion
+    type: 1
+    targetObject: Onion
+  - description: Take onion to chopping board and drop
+    type: 0
+    targetObject: Board
+  - description: Chop the onion
+    type: 2
+    targetObject: Onion
+  - description: Drop the knife on the chopping board
+    type: 0
+    targetObject: Board
+  - description: Grab the top and bottom burger buns
+    type: 1
+    targetObject: Bun
+  - description: Place buns onto plate
+    type: 0
+    targetObject: Plate
+  - description: Grab a hamburger patty
+    type: 1
+    targetObject: Patty
+  - description: Place patty on grill
+    type: 0
+    targetObject: Grill
+  - description: Grab the spatula and flip patty when ready
+    type: 3
+    targetObject: 
+  - description: Lift patty onto spatula and drop onto burger bun
+    type: 5
+    targetObject: 
+  - description: Grab a slice of cheese and put on burger
+    type: 5
+    targetObject: 
+  - description: Add a piece of lettuce onto burger
+    type: 5
+    targetObject: 
+  - description: Add 2 slices of tomato onto the burger
+    type: 5
+    targetObject: 
+  - description: Add 2 pieces of chopped onion onto the burger
+    type: 5
+    targetObject: 
+  - description: Grab the ketchup bottle
+    type: 1
+    targetObject: 
+  - description: Squeeze ketchup onto burger
+    type: 4
+    targetObject: 
+  - description: Finish with top bun
+    type: 4
+    targetObject: 

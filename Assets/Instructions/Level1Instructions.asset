@@ -12,3 +12,64 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 861186e60d03b438097111688ad9777a, type: 3}
   m_Name: Level1Instructions
   m_EditorClassIdentifier: 
+  instructions:
+  - description: 'Walk to the pink (ingredients) counter '
+    type: 5
+    targetObject: 
+  - description: 'Grab top and bottom burger buns  '
+    type: 1
+    targetObject: 
+  - description: Walk to the green (assemble) counter
+    type: 5
+    targetObject: 
+  - description: 'Drop both burger buns onto the plate '
+    type: 0
+    targetObject: 
+  - description: Walk to the pink (ingredients) counter
+    type: 5
+    targetObject: 
+  - description: Grab a hamburger patty
+    type: 1
+    targetObject: 
+  - description: Walk to the grill
+    type: 5
+    targetObject: 
+  - description: Drop the hamburger patty on the grill
+    type: 0
+    targetObject: 
+  - description: Grab the spatula and wait 15 seconds
+    type: 1
+    targetObject: 
+  - description: Flip the hamburger patty and wait 15 seconds
+    type: 3
+    targetObject: 
+  - description: 'Lift the patty onto the spatula '
+    type: 1
+    targetObject: 
+  - description: Walk the patty to the green (assemble) counter
+    type: 5
+    targetObject: 
+  - description: Drop the patty onto the bottom burger bun
+    type: 0
+    targetObject: 
+  - description: Drop the spatula at the grill
+    type: 0
+    targetObject: 
+  - description: Walk to the pink (ingredients) counter
+    type: 5
+    targetObject: 
+  - description: Grab a cheese slice
+    type: 1
+    targetObject: 
+  - description: Walk to the green (assemble) counter
+    type: 5
+    targetObject: 
+  - description: Drop the cheese on top of the patty
+    type: 0
+    targetObject: 
+  - description: Grab the top bun
+    type: 1
+    targetObject: 
+  - description: Place on top of cheese patty
+    type: 0
+    targetObject: 

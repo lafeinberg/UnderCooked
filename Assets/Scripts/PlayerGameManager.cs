@@ -17,6 +17,8 @@ public class PlayerManager : MonoBehaviour
     private int currentInstructionIndex = 0;
     private int currentLevel;
 
+    public InstructionProgressPanel instructionProgressPanel;
+
     private GameManager gameManager;
 
     void Start()
@@ -72,6 +74,7 @@ public class PlayerManager : MonoBehaviour
         if (instruction.type == actionType && instruction.targetObject == target)
         {
             Debug.Log($"player {playerId} completed: {instruction.description}");
+            instructionProgressPanel.MarkInstructionComplete(currentInstructionIndex, true);
 
             currentInstructionIndex++;
 

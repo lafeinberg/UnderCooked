@@ -12,3 +12,58 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 861186e60d03b438097111688ad9777a, type: 3}
   m_Name: Level3Instructions
   m_EditorClassIdentifier: 
+  instructions:
+  - description: Chop the lettuce
+    type: 2
+    targetObject: 
+  - description: Chop the tomato
+    type: 2
+    targetObject: 
+  - description: Chop the onion
+    type: 2
+    targetObject: 
+  - description: Put buns on plate
+    type: 5
+    targetObject: 
+  - description: Put hamburger patty on grill
+    type: 0
+    targetObject: 
+  - description: Grab spatula and smash down the patty
+    type: 3
+    targetObject: 
+  - description: Cook the patty,
+    type: 3
+    targetObject: 
+  - description: Put patty on bun
+    type: 5
+    targetObject: 
+  - description: Add cheese to the burger
+    type: 5
+    targetObject: 
+  - description: Grab an egg
+    type: 1
+    targetObject: 
+  - description: Crack egg onto the grill
+    type: 0
+    targetObject: 
+  - description: Cook the egg
+    type: 3
+    targetObject: 
+  - description: Add egg onto the burger
+    type: 5
+    targetObject: 
+  - description: Add lettuce to the burger
+    type: 5
+    targetObject: 
+  - description: Add tomato to the burger
+    type: 5
+    targetObject: 
+  - description: Add onions to the burger
+    type: 5
+    targetObject: 
+  - description: Add ketchup to the burger
+    type: 4
+    targetObject: 
+  - description: Finish with top bun
+    type: 5
+    targetObject: 
