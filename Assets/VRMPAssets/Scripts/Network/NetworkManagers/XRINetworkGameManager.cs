@@ -515,8 +515,23 @@ namespace XRMultiplayer
                 ConnectedRoomCode = m_LobbyManager.connectedLobby.LobbyCode;
                 ConnectedRoomName.Value = m_LobbyManager.connectedLobby.Name;
 
-                if (m_LobbyManager.connectedLobby.HostId == AuthenicationId)
+                string[] args = System.Environment.GetCommandLineArgs();
+                bool isClient = false;
+
+                foreach (string arg in args)
                 {
+                    if (arg == "client")
+                    {
+                        isClient = true;
+                        break;
+                    }
+                }
+
+                Debug.Log("connecting");
+
+                if (m_LobbyManager.connectedLobby.HostId == AuthenicationId && !isClient)
+                {
+                    Debug.Log("host");
                     connected = NetworkManager.Singleton.StartHost();
                 }
                 else
