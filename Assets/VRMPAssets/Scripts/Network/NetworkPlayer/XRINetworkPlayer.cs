@@ -214,6 +214,7 @@ namespace XRMultiplayer
             leftHand.SetPositionAndRotation(m_LeftHandOrigin.position, m_LeftHandOrigin.rotation);
             rightHand.SetPositionAndRotation(m_RightHandOrigin.position, m_RightHandOrigin.rotation);
             head.SetPositionAndRotation(m_HeadOrigin.position, m_HeadOrigin.rotation);
+            Debug.Log($"[Teleport] Head is at {m_HeadOrigin.position}");
         }
 
         ///<inheritdoc/>
@@ -252,7 +253,16 @@ namespace XRMultiplayer
                 m_XROrigin = FindFirstObjectByType<XROrigin>();
                 if (m_XROrigin != null)
                 {
+                    Vector3 hostSpawnPos = new Vector3(-2, 1.36144f, 0); // Set the spawn point of two players, only modify x and z
+                    Vector3 clientSpawnPos = new Vector3(2, 1.36144f, 0);
+                    Vector3 spawnPos = IsServer ? hostSpawnPos : clientSpawnPos;
+                    m_XROrigin.MoveCameraToWorldLocation(spawnPos);
                     m_HeadOrigin = m_XROrigin.Camera.transform;
+                    ////Mywork: Move the spawn position
+                    
+                    //Vector3 offset = IsServer? hostSpawnPos : clientSpawnPos;
+                    //m_HeadOrigin.position += offset;
+                    Debug.Log($"[Teleport] Origin moved to {m_XROrigin.Camera.transform.position}");
                 }
                 else
                 {

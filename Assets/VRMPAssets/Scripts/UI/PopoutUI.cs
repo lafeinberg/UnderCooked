@@ -23,14 +23,11 @@ namespace XRMultiplayer
             }
 
             transform.position = m_MainCamTransform.position;
-
-            Vector3 rot = m_MainCamTransform.eulerAngles;
-            rot.x = 0;
-            rot.z = 0;
-            transform.rotation = Quaternion.Euler(rot);
+            Debug.Log($"[UIAlign] Step 1 - Initial Position Set To Camera: {transform.position}");
 
             transform.position += transform.forward * m_DistanceFromFace;
             transform.position += Vector3.up * -m_YOffset;
+            Debug.Log($"[UIAlign] Step 4 - After Y Offset ({-m_YOffset}): {transform.position}");
         }
     }
 }
