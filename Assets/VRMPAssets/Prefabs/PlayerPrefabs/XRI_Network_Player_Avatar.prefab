@@ -258,6 +258,7 @@ GameObject:
   - component: {fileID: 1165756021160359066}
   - component: {fileID: 4588994832583027022}
   - component: {fileID: 8435302620866516779}
+  - component: {fileID: 3299070582629466963}
   m_Layer: 0
   m_Name: XRI_Network_Player_Avatar
   m_TagString: Untagged
@@ -475,6 +476,21 @@ MonoBehaviour:
   m_HandControllerEulerOffsets:
   - {x: 0.25, y: 2.91, z: 101.8}
   - {x: 1.04, y: 0, z: 261.36}
+--- !u!114 &3299070582629466963
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5358844088564582620}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bfd8dfbcc9c754704bee20259bd40055, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playerId: 
+  avatarRoot: {fileID: 8278534051734837092}
+  xrRigHead: {fileID: 0}
 --- !u!1 &5908336471056132768
 GameObject:
   m_ObjectHideFlags: 0

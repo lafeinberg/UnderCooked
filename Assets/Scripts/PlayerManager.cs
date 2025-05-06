@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using XRMultiplayer;
 using Unity.Netcode;
+using Unity.XR.CoreUtils;
 
 
 
@@ -20,21 +21,60 @@ public class PlayerManager : NetworkBehaviour
     private Dictionary<int, LevelStats> levelStats = new();
     private GameManager gameManager;
     private XRINetworkPlayer networkPlayer;
+    public static PlayerManager LocalPlayer;
+
+    public Transform avatarRoot;     // Reference to AvatarRoot on PlayerPrefab
+    public Transform xrRigHead;      // Reference to local XR rig's head (camera)
+
 
     private ulong clientId;
 
-
-    void Awake()
+    void Update()
     {
-        networkPlayer = GetComponent<XRINetworkPlayer>();
+        if (avatarRoot != null)
+        {
+            var xrOrigin = FindObjectOfType<Unity.XR.CoreUtils.XROrigin>();
+            if (xrOrigin != null)
+            {
+                xrRigHead = xrOrigin.Camera.transform;
+            }
+            // Sync networked avatar to local XR head position + rotation
+            //avatarRoot.position = xrRigHead.position;
+            //avatarRoot.rotation = xrRigHead.rotation;
+        }
     }
 
+    [ClientRpc]
+    public void TeleportClientRpc(Vector3 position, Quaternion rotation)
+    {
+        //if (!IsOwner) return;
+        Debug.Log($"[Player {OwnerClientId}] Received teleport RPC to {position}");
+
+        var xrOrigin = FindObjectOfType<Unity.XR.CoreUtils.XROrigin>();
+        if (xrOrigin != null)
+        {
+            xrOrigin.transform.position = position;
+            xrOrigin.transform.rotation = rotation;
+            Debug.Log($"Teleported player {OwnerClientId} to {position}");
+        }
+    }
 
     public override void OnNetworkSpawn()
     {
-        clientId = networkPlayer.NetworkObject.OwnerClientId;
-        GameManager.Instance.RegisterPlayer(clientId);
+        if (IsOwner)
+        {
+            if (NetworkGameLogicManager.Instance != null)
+            {
+                NetworkGameLogicManager.Instance.RegisterPlayer(this);
+                Debug.Log($"[PlayerManager] Registered with GameLogicManager: {OwnerClientId}");
+            }
+            else
+            {
+                Debug.LogError("NetworkGameLogicManager.Instance is NULL!");
+            }
+        }
     }
+
 
     public void StartLevel(int levelNumber)
     {

@@ -74,8 +74,7 @@ MonoBehaviour:
   m_NetworkConfig:
     ProtocolVersion: 0
     NetworkTransport: {fileID: 2613880095383542483}
-    PlayerPrefab: {fileID: 5358844088564582620, guid: 2b6dab709dc28bd4c98b9d7d53793dc6,
-      type: 3}
+    PlayerPrefab: {fileID: 5358844088564582620, guid: 2b6dab709dc28bd4c98b9d7d53793dc6, type: 3}
     Prefabs:
       NetworkPrefabsLists:
       - {fileID: 11400000, guid: 2995457f2d3cc4242a2895501478048c, type: 2}
@@ -110,8 +109,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_ProtocolType: 0
-  m_UseWebSockets: 0
-  m_UseEncryption: 0
   m_MaxPacketQueueSize: 1024
   m_MaxPayloadSize: 6144
   m_HeartbeatTimeoutMS: 500
