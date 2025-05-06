@@ -45,9 +45,9 @@ TagManager:
   - HiddenMesh
   - Water
   - UI
-  - 
+  - Pathable
   - Mirror
-  - 
+  - Decor
   - 
   - Character
   - MirroredCharacter
