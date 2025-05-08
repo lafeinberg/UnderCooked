@@ -1,71 +1,91 @@
+using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.XR.Interaction.Toolkit;
+using UnityEngine.XR.Interaction.Toolkit.Interactables;
 
-
-[RequireComponent(typeof(Collider), typeof(Rigidbody))]
-[RequireComponent(typeof(UnityEngine.XR.Interaction.Toolkit.Interactables.XRGrabInteractable))]
-public class StackIngredient : MonoBehaviour
+[RequireComponent(typeof(XRGrabInteractable))]
+public class IngredientStacker : MonoBehaviour
 {
-    [Tooltip("Tag used by the plate and by any placed ingredient.")]
-    public string validTargetTag = "IngredientSurface";
+    public Transform snapPoint;
+    public LayerMask stackableLayer;
+    public float snapRadius = 0.05f;
 
-    [Tooltip("How ‘upward’ the collision normal must be (1 = perfectly up).")]
-    [Range(0f, 1f)]
-    public float upwardDotThreshold = 0.7f;
-
-    UnityEngine.XR.Interaction.Toolkit.Interactables.XRGrabInteractable _grab;
-    Rigidbody         _rb;
-    MeshCollider      _meshCol;
-    bool              _isLocked = false;
+    XRGrabInteractable grabInteractable;
+    Rigidbody rb;
 
     void Awake()
     {
-        _grab    = GetComponent<UnityEngine.XR.Interaction.Toolkit.Interactables.XRGrabInteractable>();
-        _rb      = GetComponent<Rigidbody>();
-        // assume your real geometry lives in a MeshCollider on a child called "Visuals"
-        _meshCol = GetComponentInChildren<MeshCollider>();
-        if (_meshCol == null)
-            Debug.LogError($"[{name}] No MeshCollider found in children!");
+        grabInteractable = GetComponent<XRGrabInteractable>();
+        rb = GetComponent<Rigidbody>();
+        grabInteractable.selectExited.AddListener(OnReleased);
     }
 
-    void OnCollisionEnter(Collision collision)
+    void OnReleased(SelectExitEventArgs args)
+        => TrySnap();
+
+    void TrySnap()
     {
-        if (_isLocked) return;
-
-        var hitCol = collision.collider;
-        // only snap to things tagged "IngredientSurface"
-        // (plate root and any ingredient you retag after snapping)
-        if (!hitCol.CompareTag(validTargetTag))
-            return;
-
-        // require at least one contact from above
-        bool fromAbove = false;
-        foreach (var contact in collision.contacts)
+        Collider[] hits = Physics.OverlapSphere(snapPoint.position, snapRadius, stackableLayer);
+        foreach (var col in hits)
         {
-            if (Vector3.Dot(contact.normal, Vector3.up) >= upwardDotThreshold)
+            var other = col.GetComponentInParent<IngredientStacker>();
+            if (other != null && other != this)
             {
-                fromAbove = true;
-                break;
+                SnapOnto(other);
+                return;
             }
         }
-        if (!fromAbove) return;
+    }
 
-        // 1) calculate the exact Y where bottom of this mesh should sit
-        float targetTopY = hitCol.bounds.max.y;
-        float myHalfH    = _meshCol.bounds.extents.y;
+    void SnapOnto(IngredientStacker target)
+    {
+        var joint = gameObject.AddComponent<FixedJoint>();
+        joint.connectedBody = target.rb;
+        joint.breakForce = Mathf.Infinity;
+        joint.breakTorque = Mathf.Infinity;
 
-        Vector3 newPos = transform.position;
-        newPos.y = targetTopY + myHalfH;
-        transform.position = newPos;  // only adjust height
+        transform.position = target.snapPoint.position;
+        transform.rotation = target.snapPoint.rotation;
 
-        // 2) **always** parent to the **plate root** so everything moves together
-        //    transform.root returns the top‐most GameObject in this hierarchy
-        var plateRoot = hitCol.transform.root;
-        transform.SetParent(plateRoot, worldPositionStays: true);
+        grabInteractable.enabled = false;
 
-        // 3) lock it down
-        _grab.enabled = false;
-        _rb.isKinematic = true;
-        gameObject.tag  = validTargetTag;  // so the next ingredient can land on you
-        _isLocked       = true;
+        // Ensure the root ALWAYS has an XRGrabInteractable and no others do.
+        var root = target.GetStackRoot();
+        foreach (var ing in root.GetComponentsInChildren<IngredientStacker>())
+        {
+            if (ing != root && ing.GetComponent<XRGrabInteractable>() != null)
+            {
+                Destroy(ing.GetComponent<XRGrabInteractable>());
+            }
+        }
+        if (root.GetComponent<XRGrabInteractable>() == null)
+        {
+            root.gameObject.AddComponent<XRGrabInteractable>();
+        }
+    }
+}
+
+public static class StackExtensions
+{
+    public static IngredientStacker GetStackRoot(this IngredientStacker ing)
+    {
+        var visited = new HashSet<IngredientStacker>();
+        var current = ing;
+        while (true)
+        {
+            bool foundParent = false;
+            foreach (var joint in current.GetComponents<FixedJoint>())
+            {
+                var parentIng = joint.connectedBody.GetComponent<IngredientStacker>();
+                if (parentIng != null && visited.Add(parentIng))
+                {
+                    current = parentIng;
+                    foundParent = true;
+                    break;
+                }
+            }
+            if (!foundParent) break;
+        }
+        return current;
     }
 }
