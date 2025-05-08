@@ -1,17 +1,13 @@
 using UnityEngine;
 
 [RequireComponent(typeof(Collider))]
-public class TomatoSliceOnHits : MonoBehaviour
+public class SliceIngredients : MonoBehaviour
 {
-    [Header("Assign via Inspector")]
-    [Tooltip("Drag your Knife GameObject here")]
     [SerializeField] private GameObject knifeObject;
-
-    [Tooltip("Drag your Sliced Tomato prefab here")]
     [SerializeField] private GameObject slicedTomatoPrefab;
-
-    [Tooltip("How many knife-hits before slicing")]
     [SerializeField] private int hitsToSlice = 3;
+    [Tooltip("Particle system to play on each registered cut")]
+    [SerializeField] private ParticleSystem cutParticles;
 
     private int hitCount = 0;
     private bool isCollidingWithKnife = false;
@@ -22,6 +18,9 @@ public class TomatoSliceOnHits : MonoBehaviour
         {
             isCollidingWithKnife = true;
             hitCount++;
+
+            if (cutParticles != null)
+                cutParticles.Play();
 
             if (hitCount >= hitsToSlice)
                 SliceTomato();
@@ -44,6 +43,5 @@ public class TomatoSliceOnHits : MonoBehaviour
         );
 
         Destroy(gameObject);
-
     }
 }
