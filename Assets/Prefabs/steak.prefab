@@ -62,7 +62,8 @@ Transform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 1
-  m_Children: []
+  m_Children:
+  - {fileID: 3427465155004049590}
   m_Father: {fileID: 3296378476713857796}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &8053179284756157078
@@ -137,6 +138,37 @@ MeshCollider:
   m_Convex: 1
   m_CookingOptions: 30
   m_Mesh: {fileID: 1929635338539414733, guid: 367bab942037468409d91209a6d73770, type: 3}
+--- !u!1 &5227067221022437903
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3427465155004049590}
+  m_Layer: 9
+  m_Name: Salt
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &3427465155004049590
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5227067221022437903}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 5728386349069628854}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &6847374619830079393
 GameObject:
   m_ObjectHideFlags: 0
@@ -154,6 +186,7 @@ GameObject:
   - component: {fileID: 1279876600185465391}
   - component: {fileID: 909569155042522425}
   - component: {fileID: 6447821179356625121}
+  - component: {fileID: 6965360328507403615}
   m_Layer: 9
   m_Name: steak
   m_TagString: Ingredient
@@ -384,7 +417,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 1422760323
+  GlobalObjectIdHash: 1879678949
   InScenePlacedSourceGlobalObjectIdHash: 3929296391
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
@@ -474,7 +507,7 @@ MonoBehaviour:
   m_FoldoutValues: 010101
   m_AllowCollisionOwnershipExchange: 1
   m_MinExchangeVelocityMagitude: 0.025
-  spawnLocked: 1
+  spawnLocked: 0
 --- !u!114 &6447821179356625121
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -488,3 +521,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   groundTag: Floor
+--- !u!114 &6965360328507403615
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6847374619830079393}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9049e0401738eb942b6c7ff98539303d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  saltAmount: 0
+  canReceiveSalt: 1
+  saltBallPrefab: {fileID: 972968467366631063, guid: 67333f17c0783644aaa4126127026600, type: 3}
+  saltContainer: {fileID: 3427465155004049590}
