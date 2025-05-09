@@ -214,7 +214,6 @@ namespace XRMultiplayer
             leftHand.SetPositionAndRotation(m_LeftHandOrigin.position, m_LeftHandOrigin.rotation);
             rightHand.SetPositionAndRotation(m_RightHandOrigin.position, m_RightHandOrigin.rotation);
             head.SetPositionAndRotation(m_HeadOrigin.position, m_HeadOrigin.rotation);
-
         }
 
         ///<inheritdoc/>
@@ -253,6 +252,12 @@ namespace XRMultiplayer
                 m_XROrigin = FindFirstObjectByType<XROrigin>();
                 if (m_XROrigin != null)
                 {
+                    Vector3 hostSpawnPos = new Vector3(-0.874f, -2.56f, 2);
+                    Vector3 clientSpawnPos = new Vector3(-0.06f, -1.955056f, 2);
+
+                    Vector3 spawnPos = IsServer ? hostSpawnPos : clientSpawnPos;
+
+                    m_XROrigin.MoveCameraToWorldLocation(spawnPos);
                     m_HeadOrigin = m_XROrigin.Camera.transform;
                 }
                 else

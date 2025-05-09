@@ -11,23 +11,30 @@ using Unity.XR.CoreUtils;
 public class LevelStats
 {
     public int levelNumber;
-    public int score;
     public float finalTime;
+    public bool didWin;
 }
 
 public class PlayerManager : NetworkBehaviour
 {
     public string playerId;
     private Dictionary<int, LevelStats> levelStats = new();
-    private GameManager gameManager;
-    private XRINetworkPlayer networkPlayer;
     public static PlayerManager LocalPlayer;
 
-    public Transform avatarRoot;     // Reference to AvatarRoot on PlayerPrefab
-    public Transform xrRigHead;      // Reference to local XR rig's head (camera)
+    public Transform avatarRoot;
+    public Transform xrRigHead;
 
+    public int currentInstructionIndex = 0;
+    private Instruction currentInstruction;
 
-    private ulong clientId;
+    public InstructionToolbar instructionToolbar;
+    public GameObject levelStartPanel;
+    public GameObject levelCompletePanel;
+
+    public List<bool> levelComplete = new List<bool>();
+    public List<bool> levelWon = new List<bool>();
+    public List<float> levelTimes = new List<float>();
+
 
     void Update()
     {
@@ -61,62 +68,66 @@ public class PlayerManager : NetworkBehaviour
 
     public override void OnNetworkSpawn()
     {
-        if (IsOwner)
+        if (NetworkGameLogicManager.Instance != null)
         {
-            if (NetworkGameLogicManager.Instance != null)
+            NetworkGameLogicManager.Instance.RegisterPlayer(this);
+            Debug.Log($"[PlayerManager] Registered with GameLogicManager: {OwnerClientId}");
+            instructionToolbar = GetComponentInChildren<InstructionToolbar>(true);
+            if (instructionToolbar)
             {
-                NetworkGameLogicManager.Instance.RegisterPlayer(this);
-                Debug.Log($"[PlayerManager] Registered with GameLogicManager: {OwnerClientId}");
+                Debug.Log("TOOLBAR FOUND");
             }
-            else
-            {
-                Debug.LogError("NetworkGameLogicManager.Instance is NULL!");
-            }
+        }
+        else
+        {
+            Debug.LogError("NetworkGameLogicManager.Instance is NULL!");
         }
     }
 
 
-    public void StartLevel(int levelNumber)
+    [ClientRpc]
+    public void StartLevelClientRpc(int levelNumber)
     {
-        if (!levelStats.ContainsKey(levelNumber))
-        {
-            levelStats[levelNumber] = new LevelStats
-            {
-                levelNumber = levelNumber,
-                score = 0,
-                finalTime = 0f,
-            };
-        }
+        Debug.Log("Starting level on client");
+        NetworkGameLogicManager.Instance.currentLevelInstructions = NetworkGameLogicManager.Instance.allLevelInstructionSets[levelNumber - 1];
+        instructionToolbar.ActivateInstructionToolbar(NetworkGameLogicManager.Instance.GetCurrentInstruction(currentInstructionIndex));
+
     }
 
+    // DUMMY METHOD FOR TESTING 
     void OnCollisionEnter(Collision collision)
     {
         if (collision.gameObject.tag == "Ingredient")
         {
             Debug.Log("Player touched ingredient!");
-            NotifyStepCompleted();
+            PlayerStepCompleted();
         }
     }
 
-    void NotifyStepCompleted()
+    void PlayerStepCompleted()
     {
-        GameManager.Instance.UpdatePlayerProgress(clientId, 1);
-    }
-
-    public void AddScore(int levelNumber, int amount)
-    {
-        if (levelStats.ContainsKey(levelNumber))
+        if (currentInstructionIndex < NetworkGameLogicManager.Instance.GetInstructionCount())
         {
-            levelStats[levelNumber].score += amount;
+            currentInstructionIndex++;
+            NetworkGameLogicManager.Instance.UpdatePlayerProgress(this);
+            instructionToolbar.ShowInstruction(NetworkGameLogicManager.Instance.GetCurrentInstruction(currentInstructionIndex));
+        }
+        else
+        {
+            RegisterPlayerLevelComplete();
         }
     }
 
     public void RecordFinalTime(int levelNumber, float time)
     {
-        if (levelStats.ContainsKey(levelNumber))
-        {
-            levelStats[levelNumber].finalTime = time;
-        }
+        levelTimes[levelNumber] = time;
+    }
+
+    public void RegisterPlayerLevelComplete()
+    {
+        int currentLevel = NetworkGameLogicManager.Instance.GetCurrentLevel();
+        levelComplete[currentLevel] = true;
+        NetworkGameLogicManager.Instance.RegisterPlayerLevelComplete(this);
     }
 
     public LevelStats GetLevelStats(int levelNumber)

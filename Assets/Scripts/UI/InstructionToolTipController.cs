@@ -19,29 +19,31 @@ public class InstructionToolbar : MonoBehaviour
     "Grab the lettuce",
     "Toast the bun",
     "Assemble the burger"
-};
+    };
 
-    private int currentInstruction = 0;
 
     void Awake()
     {
         originalPos = panelRect.anchoredPosition;
     }
 
-    private void Start()
+    public void ActivateInstructionToolbar(Instruction firstInstruction)
     {
-        StartCoroutine(TestInstructionLoop());
+        Debug.Log("activating tooltip");
+        gameObject.SetActive(true);
+        ShowInstruction(firstInstruction);
     }
-
 
     /*
     * Shows new current instruction string and animates new instruction into scene
     */
-    public void ShowInstruction(string instruction)
+    public void ShowInstruction(Instruction instruction)
     {
         gameObject.SetActive(true);
         panelRect.anchoredPosition = new Vector2(originalPos.x, originalPos.y + slideOffset);
-        instructionText.text = instruction;
+        instructionText.text = instruction.description.ToString();
+
+        Debug.Log($"Current instruction: {instructionText.text}");
 
         if (currentAnim != null) StopCoroutine(currentAnim);
         currentAnim = StartCoroutine(SlideIn());
@@ -88,6 +90,8 @@ public class InstructionToolbar : MonoBehaviour
 
         panelRect.anchoredPosition = endPos;
     }
+
+    /*
     private IEnumerator TestInstructionLoop()
     {
         while (true)
@@ -102,4 +106,5 @@ public class InstructionToolbar : MonoBehaviour
             yield return new WaitForSeconds(1f);
         }
     }
+    */
 }

@@ -13,20 +13,20 @@ MonoBehaviour:
   m_Name: Level1Instructions
   m_EditorClassIdentifier: 
   instructions:
-  - description: 'Walk to the pink (ingredients) counter '
-    type: 5
+  - description: Walk to the ingredients table
+    type: 6
     targetObject: 
   - description: 'Grab top and bottom burger buns  '
     type: 1
     targetObject: 
-  - description: Walk to the green (assemble) counter
-    type: 5
+  - description: Walk to the assembly counter
+    type: 6
     targetObject: 
   - description: 'Drop both burger buns onto the plate '
     type: 0
     targetObject: 
-  - description: Walk to the pink (ingredients) counter
-    type: 5
+  - description: Walk to the ingredients table
+    type: 6
     targetObject: 
   - description: Grab a hamburger patty
     type: 1
@@ -46,8 +46,8 @@ MonoBehaviour:
   - description: 'Lift the patty onto the spatula '
     type: 1
     targetObject: 
-  - description: Walk the patty to the green (assemble) counter
-    type: 5
+  - description: Walk to the assembly counter
+    type: 6
     targetObject: 
   - description: Drop the patty onto the bottom burger bun
     type: 0
@@ -55,14 +55,14 @@ MonoBehaviour:
   - description: Drop the spatula at the grill
     type: 0
     targetObject: 
-  - description: Walk to the pink (ingredients) counter
+  - description: Walk to the ingredients table
     type: 5
     targetObject: 
   - description: Grab a cheese slice
     type: 1
     targetObject: 
-  - description: Walk to the green (assemble) counter
-    type: 5
+  - description: Walk to the assembly counter
+    type: 6
     targetObject: 
   - description: Drop the cheese on top of the patty
     type: 0

@@ -7,22 +7,34 @@ using Unity.Netcode;
 using UnityEngine.UI;
 using TMPro;
 using UnityEngine.XR.Interaction.Toolkit;
+using Unity.Services.Lobbies.Models;
 
 
 public class NetworkGameLogicManager : NetworkBehaviour
 {
-    [Header("Ready UI")]
-    public GameObject readyUI;
-    public GameObject readyButton;
-    public TextMeshProUGUI readyCountText;
 
     [Header("Start Level UI")]
     public GameObject overlayPanel;
     public TextMeshProUGUI overlayText;
+    public GameObject readyUI;
+    public GameObject readyButton;
+    public TextMeshProUGUI readyCountText;
 
     [Header("Win/Lose UI")]
     public GameObject winUI;
     public GameObject loseUI;
+
+    [Header("Next Level UI")]
+    public GameObject nextLevelUI;
+    public TextMeshProUGUI levelEndIntroText;
+    public TextMeshProUGUI levelEndStats;
+    public GameObject nextLevelButton;
+    public TextMeshProUGUI nextLevelReadyText;
+
+    [Header("Timer")]
+    public GameObject timerObject;
+    private float timer = 0f;
+    public TextMeshProUGUI timerText;
 
     private NetworkVariable<bool> showReadyUI = new NetworkVariable<bool>(false, NetworkVariableReadPermission.Everyone,
     NetworkVariableWritePermission.Server);
@@ -38,16 +50,21 @@ public class NetworkGameLogicManager : NetworkBehaviour
     private bool localReady = false;
     private bool uiShown = false;
 
-    public int currentLevel = 1;
-    private float timer = 0f;
-    private bool matchRunning = false;
-
+    [Header("Instruction Logic")]
+    public List<InstructionSet> allLevelInstructionSets;
     public InstructionSet currentLevelInstructions;
     public InstructionProgressPanel instructionProgressPanel;
+    public InstructionToolbar instructionToolbar;
+
+    [Header("Level State Manager")]
+    public int currentLevel = 1;
+    private bool matchRunning = false;
+    private bool levelWinnerDetected = false;
 
     public Transform[] spawnPoints;
 
     public static NetworkGameLogicManager Instance;
+
 
     void Awake()
     {
@@ -56,6 +73,7 @@ public class NetworkGameLogicManager : NetworkBehaviour
         else
             Destroy(gameObject);
     }
+
 
     public void RegisterPlayer(PlayerManager player)
     {
@@ -68,9 +86,12 @@ public class NetworkGameLogicManager : NetworkBehaviour
 
     void Start()
     {
-        readyUI.SetActive(false);
         winUI.SetActive(false);
         loseUI.SetActive(false);
+        timerObject.SetActive(false);
+        readyUI.SetActive(true);
+        nextLevelUI.SetActive(true);
+        uiShown = true;
         readyCountText.text = "Players Ready: 0 / 2";
     }
 
@@ -96,7 +117,6 @@ public class NetworkGameLogicManager : NetworkBehaviour
             foreach (var player in players)
             {
                 var spawnPoint = spawnPoints[index % spawnPoints.Length];
-                player.TeleportClientRpc(spawnPoint.position, spawnPoint.rotation);
                 index++;
             }
             StartLevel(currentLevel);
@@ -108,17 +128,6 @@ public class NetworkGameLogicManager : NetworkBehaviour
         {
             showReadyUI.Value = true;
         }
-        if (IsOwner)
-        {
-            //Debug.Log($"[Client {OwnerClientId}] showReadyUI={showReadyUI.Value}, uiShown={uiShown}, gameStarted={gameStarted.Value}");
-
-        }
-        if (showReadyUI.Value && !uiShown && !gameStarted.Value)
-        {
-            readyUI.SetActive(true);
-            uiShown = true;
-        }
-
         if (gameStarted.Value)
         {
             readyUI.SetActive(false);
@@ -129,33 +138,97 @@ public class NetworkGameLogicManager : NetworkBehaviour
             readyCountText.text = $"Players Ready: {readyCount.Value} / 2";
         }
 
-        if (gameStarted.Value && (winner.Value == 0 && IsServer || winner.Value == 1 && !IsServer))
+        if (matchRunning)
         {
-            winUI.SetActive(true);
-        }
-        else if (gameStarted.Value && winner.Value != -1)
-        {
-            loseUI.SetActive(true);
+            timer += Time.deltaTime;
+            int minutes = Mathf.FloorToInt(timer / 60);
+            int seconds = Mathf.FloorToInt(timer % 60);
+
+            timerText.text = string.Format("{0}:{1:00}", minutes, seconds);
         }
     }
 
-
-    public void RegisterWinner(int winnerId)
+    public void RegisterPlayerLevelComplete(PlayerManager player)
     {
-        if (!IsServer || winner.Value != -1) return;
-
-        Debug.Log($"[Server] RegisterWinner({winnerId})");
-        winner.Value = winnerId;
+        if (NetworkManager.Singleton.LocalClientId == player.OwnerClientId)
+        {
+            if (!levelWinnerDetected)
+            {
+                winUI.SetActive(true);
+                player.levelWon[currentLevel] = true;
+                player.levelTimes[currentLevel] = timer;
+                player.levelComplete[currentLevel] = true;
+                timerObject.SetActive(false);
+            }
+            else
+            {
+                loseUI.SetActive(true);
+                player.levelWon[currentLevel] = false;
+                player.levelTimes[currentLevel] = timer;
+                player.levelComplete[currentLevel] = true;
+                timerObject.SetActive(false);
+            }
+        }
+        if (players[0].levelComplete[currentLevel] && players[1].levelComplete[currentLevel])
+        {
+            EndLevelClientRpc();
+        }
     }
 
     public void StartLevel(int currentLevel)
     {
-        ShowLevel($"Level {currentLevel}", 4f);
+        if (currentLevel <= allLevelInstructionSets.Count)
+        {
+            currentLevelInstructions = allLevelInstructionSets[currentLevel - 1];
+            Debug.Log($"Loaded instructions for Level {currentLevel}");
+        }
+        else
+        {
+            Debug.LogError($"No instructions found for Level {currentLevel}");
+            return;
+        }
+
+        ShowLevelClientRpc($"Level {currentLevel}", 4f);
+        foreach (var player in players)
+        {
+            player.StartLevelClientRpc(currentLevel);
+            matchRunning = true;
+        }
     }
 
-    public void ShowLevel(string levelName, float duration)
+    [ClientRpc]
+    public void EndLevelClientRpc()
     {
-        StartCoroutine(ShowOverlay(levelName, duration));
+        matchRunning = false;
+        timer = 0f;
+        nextLevelUI.SetActive(true);
+
+        levelEndIntroText.text = $"Level {currentLevel} Complete!";
+        int player1EndMinutes = Mathf.FloorToInt(players[0].levelTimes[currentLevel] / 60);
+        int player1EndSeconds = Mathf.FloorToInt(players[0].levelTimes[currentLevel] % 60);
+        string player1Time = string.Format("{0}:{1:00}", player1EndMinutes, player1EndSeconds);
+
+        int player2EndMinutes = Mathf.FloorToInt(players[0].levelTimes[currentLevel] / 60);
+        int player2EndSeconds = Mathf.FloorToInt(players[0].levelTimes[currentLevel] % 60);
+        string player2Time = string.Format("{0}:{1:00}", player2EndMinutes, player2EndSeconds);
+        levelEndStats.text = $"Player 1 Time: {player1Time}\nPlayer 2 Time: {player2Time}";
+    }
+
+    public void OnNextLevel()
+    {
+        currentLevel++;
+        nextLevelUI.SetActive(false);
+        StartLevel(currentLevel);
+    }
+
+
+    [ClientRpc]
+    void ShowLevelClientRpc(string levelName, float duration)
+    {
+        {
+            timerObject.SetActive(true);
+            StartCoroutine(ShowOverlay(levelName, duration));
+        }
     }
 
     private System.Collections.IEnumerator ShowOverlay(string levelName, float duration)
@@ -164,6 +237,34 @@ public class NetworkGameLogicManager : NetworkBehaviour
         overlayText.text = levelName;
         yield return new WaitForSeconds(duration);
         overlayPanel.SetActive(false);
+        yield return new WaitForSeconds(2);
+    }
+
+    // only for the progress Ui on the fridge
+    public void UpdatePlayerProgress(PlayerManager player)
+    {
+        Debug.Log($"player {player.OwnerClientId} completed instruction {player.currentInstructionIndex}");
+
+        if (player.currentInstructionIndex >= currentLevelInstructions.instructions.Count)
+        {
+            Debug.Log($"Player {player.OwnerClientId} finished all instructions!");
+        }
+
+    }
+
+    public Instruction GetCurrentInstruction(int index)
+    {
+        return currentLevelInstructions.instructions[index];
+    }
+
+    public int GetInstructionCount()
+    {
+        return currentLevelInstructions.instructions.Count;
+    }
+
+    public int GetCurrentLevel()
+    {
+        return currentLevel;
     }
 
 }
