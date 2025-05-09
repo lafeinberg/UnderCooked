@@ -213,6 +213,7 @@ namespace XRMultiplayer
             // Set transforms to be replicated with ClientNetworkTransforms
             leftHand.SetPositionAndRotation(m_LeftHandOrigin.position, m_LeftHandOrigin.rotation);
             rightHand.SetPositionAndRotation(m_RightHandOrigin.position, m_RightHandOrigin.rotation);
+            head.SetPositionAndRotation(m_HeadOrigin.position, m_HeadOrigin.rotation);
 
         }
 
