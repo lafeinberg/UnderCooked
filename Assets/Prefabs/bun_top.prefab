@@ -186,6 +186,7 @@ GameObject:
   - component: {fileID: 8717070478591505256}
   - component: {fileID: 7624380430745097017}
   - component: {fileID: 1567451281264845697}
+  - component: {fileID: 4085029035493214098}
   m_Layer: 9
   m_Name: bun_top
   m_TagString: Ingredient
@@ -430,7 +431,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 1522608255
+  GlobalObjectIdHash: 2494016265
   InScenePlacedSourceGlobalObjectIdHash: 0
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
@@ -534,3 +535,21 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   groundTag: Floor
+--- !u!114 &4085029035493214098
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2824084357036625276}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3b429796ce5a24d75a55962a03b1afc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  snapPoint: {fileID: 5246554464460225043}
+  stackableLayer:
+    serializedVersion: 2
+    m_Bits: 512
+  snapRadius: 0.05
+  rb: {fileID: 0}

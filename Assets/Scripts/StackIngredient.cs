@@ -11,7 +11,7 @@ public class IngredientStacker : MonoBehaviour
     public float snapRadius = 0.05f;
 
     XRGrabInteractable grabInteractable;
-    Rigidbody rb;
+    public Rigidbody rb;
 
     void Awake()
     {
@@ -21,20 +21,31 @@ public class IngredientStacker : MonoBehaviour
     }
 
     void OnReleased(SelectExitEventArgs args)
-        => TrySnap();
+    {
+        Debug.Log($"{name}: Released, attempting to snap...");
+        TrySnap();
+    }
+
 
     void TrySnap()
     {
         Collider[] hits = Physics.OverlapSphere(snapPoint.position, snapRadius, stackableLayer);
+        Debug.Log($"{name}: Checking {hits.Length} colliders in snap radius.");
         foreach (var col in hits)
         {
             var other = col.GetComponentInParent<IngredientStacker>();
             if (other != null && other != this)
             {
+                if (this.GetStackRoot() == other.GetStackRoot())
+                {
+                    Debug.LogWarning($"{name} tried to snap to {other.name}, but they are already connected.");
+                    continue;
+                }
                 SnapOnto(other);
                 return;
             }
         }
+        Debug.Log($"{name}: No valid target found to snap.");
     }
 
     void SnapOnto(IngredientStacker target)
@@ -47,17 +58,19 @@ public class IngredientStacker : MonoBehaviour
         transform.position = target.snapPoint.position;
         transform.rotation = target.snapPoint.rotation;
 
-        grabInteractable.enabled = false;
+        //grabInteractable.enabled = false;
 
         // Ensure the root ALWAYS has an XRGrabInteractable and no others do.
         var root = target.GetStackRoot();
-        foreach (var ing in root.GetComponentsInChildren<IngredientStacker>())
-        {
-            if (ing != root && ing.GetComponent<XRGrabInteractable>() != null)
-            {
-                Destroy(ing.GetComponent<XRGrabInteractable>());
-            }
-        }
+        Debug.Log($"{name}: Stack root is {root.name}");
+        //foreach (var ing in root.GetComponentsInChildren<IngredientStacker>())
+        //{
+        //    if (ing != root && ing.GetComponent<XRGrabInteractable>() != null)
+        //    {
+        //        Destroy(ing.GetComponent<XRGrabInteractable>());
+
+        //    }
+        //}
         if (root.GetComponent<XRGrabInteractable>() == null)
         {
             root.gameObject.AddComponent<XRGrabInteractable>();

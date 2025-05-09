@@ -413,8 +413,9 @@ MonoBehaviour:
   snapPoint: {fileID: 4234398203828419437}
   stackableLayer:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 512
   snapRadius: 0.05
+  rb: {fileID: 0}
 --- !u!1 &7887610237583085884
 GameObject:
   m_ObjectHideFlags: 0

@@ -5,47 +5,89 @@ using System.Collections.Generic;
 [RequireComponent(typeof(Collider))]
 public class PlateStacker : MonoBehaviour
 {
-    [Tooltip("Empty child where stacked items get parented")]
-    public Transform stackRoot;
-
-    // how tall the pile already is, in local plate-space
-    private float currentLocalHeight = 0f;
-
-    void Awake()
+    [Tooltip("Ingredient stack order from bottom to top")]
+    public List<string> validBurgerTagOrder = new List<string>
     {
-        // make sure this collider is just the trigger
-        var trigger = GetComponent<Collider>();
-        trigger.isTrigger = true;
+        "bun_bottom", "cheese", "bun_top"
+    };
+
+    //public GameManager gameManager;
+
+    private void Awake()
+    {
+        GetComponent<Collider>().isTrigger = false;
     }
 
-    void OnTriggerEnter(Collider other)
+    private void OnCollisionEnter(Collision collision)
     {
-        // only catch ingredients that aren’t already stacked and aren’t being grabbed
-        var grab = other.GetComponent<UnityEngine.XR.Interaction.Toolkit.Interactables.XRGrabInteractable>();
-        if (!other.CompareTag("Ingredient") || grab.isSelected) return;
+        var other = collision.collider;
+        var ing = other.GetComponent<IngredientStacker>();
+        if (ing == null) return;
 
-        // measure its world height (bounds.size.y) before we reparent
-        var col    = other.GetComponent<Collider>();
-        float h    = col.bounds.size.y;
+        var root = ing.GetStackRoot();
+        var stack = new List<IngredientStacker>();
+        CollectStackFromRoot(root, stack);
 
-        // parent _without_ preserving world-pos
-        other.transform.SetParent(stackRoot, worldPositionStays: false);
+        Debug.Log($"Burger on plate with {stack.Count} ingredients.");
 
-        // position it so its bottom sits exactly on the current pile
-        // pivot is at center, so local Y = half-height + currentLocalHeight
-        other.transform.localPosition = new Vector3(
-            0f,
-            currentLocalHeight + (h * 0.5f),
-            0f
-        );
+        if (IsValidBurger(stack))
+        {
+            Debug.Log("Interface for Game Manager: ✅ Valid burger submitted!");
+            //gameManager?.SubmitBurger(stack);
+        }
+        else
+        {
+            Debug.LogWarning("❌ Invalid burger.");
+        }
+    }
 
-        // lock it down
-        var rb = other.GetComponent<Rigidbody>();
-        rb.isKinematic            = true;
-        grab.enabled              = false;
-        col.enabled               = false;   // turn off collider so it can't push itself up
+    void CollectStackFromRoot(IngredientStacker root, List<IngredientStacker> result)
+    {
+        result.Clear();
 
-        // bump the pile height for the next ingredient
-        currentLocalHeight += h;
+        var current = root;
+        while (current != null)
+        {
+            result.Add(current);
+
+            FixedJoint nextJoint = null;
+            foreach (var joint in FindObjectsOfType<FixedJoint>())
+            {
+                if (joint.connectedBody == current.rb)
+                {
+                    nextJoint = joint;
+                    break;
+                }
+            }
+
+            if (nextJoint != null)
+            {
+                current = nextJoint.GetComponent<IngredientStacker>();
+            }
+            else
+            {
+                break;
+            }
+        }
+    }
+
+    bool IsValidBurger(List<IngredientStacker> stack)
+    {
+        if (stack.Count != validBurgerTagOrder.Count)
+            return false;
+
+        for (int i = 0; i < stack.Count; i++)
+        {
+            string expected = validBurgerTagOrder[i];
+            string actualName = stack[i].name;
+
+            if (!actualName.Contains(expected))
+            {
+                Debug.LogWarning($"Expected '{expected}', but got '{actualName}'");
+                return false;
+            }
+        }
+
+        return true;
     }
 }
