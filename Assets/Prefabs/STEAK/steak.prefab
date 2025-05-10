@@ -187,6 +187,7 @@ GameObject:
   - component: {fileID: 909569155042522425}
   - component: {fileID: 6447821179356625121}
   - component: {fileID: 6965360328507403615}
+  - component: {fileID: 6358058278028026759}
   m_Layer: 9
   m_Name: steak
   m_TagString: Ingredient
@@ -537,3 +538,21 @@ MonoBehaviour:
   canReceiveSalt: 1
   saltBallPrefab: {fileID: 972968467366631063, guid: 67333f17c0783644aaa4126127026600, type: 3}
   saltContainer: {fileID: 3427465155004049590}
+--- !u!114 &6358058278028026759
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6847374619830079393}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3b429796ce5a24d75a55962a03b1afc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  snapPoint: {fileID: 6208248437651080125}
+  stackableLayer:
+    serializedVersion: 2
+    m_Bits: 512
+  snapRadius: 0.05
+  rb: {fileID: 0}
