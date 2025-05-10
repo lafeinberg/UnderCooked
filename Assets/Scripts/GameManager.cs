@@ -369,7 +369,7 @@ public class GameManager : NetworkBehaviour
     {
         Debug.Log("SHOWING START LEVEL UI");
         startLevelPanel.transform.position =
-    Camera.main.transform.position + Camera.main.transform.forward * 0.5f;
+    Camera.main.transform.position;
         startLevelPanel.transform.rotation =
             Quaternion.LookRotation(Camera.main.transform.forward);
         startLevelPanel.SetActive(true);

@@ -2,13 +2,15 @@ using System;
 using UnityEngine;
 using UnityEngine.XR.Interaction.Toolkit;
 using UnityEngine.XR.Interaction.Toolkit.Interactables;
+using UnityEngine.UI;
+using TMPro;
 
 [RequireComponent(typeof(Collider))]
 public class CookableSteak : MonoBehaviour
 {
     [Header("Tags")]
-    [SerializeField] private string cookButtonTag    = "Button";
-    [SerializeField] private string panTag           = "Pan";
+    [SerializeField] private string cookButtonTag = "Button";
+    [SerializeField] private string panTag = "Pan";
 
     [Header("Prefabs & Thresholds")]
     [SerializeField] private ParticleSystem cookingParticlesPrefab;
@@ -21,13 +23,19 @@ public class CookableSteak : MonoBehaviour
     [SerializeField] private Gradient colorOverTime;
 
     private XRBaseInteractable cookButton;
-    private Transform          nearestPan;
-    private Renderer           rend;
-    private Material           matInstance;
-    private float              cookTimer;
-    private bool               isInPan;
-    private bool               isCooking;
-    private ParticleSystem     activeParticles;
+    private Transform nearestPan;
+    private Renderer rend;
+    private Material matInstance;
+    private float cookTimer;
+
+    private InstructionType cookInstructionType = InstructionType.CookItem;
+    private InstructionType dropInstructionType = InstructionType.DropItem;
+
+    public GameObject cookTimerUI;
+    public TextMeshProUGUI cookTimerText;
+    private bool isInPan;
+    private bool isCooking;
+    private ParticleSystem activeParticles;
 
     private void Awake()
     {
@@ -86,13 +94,13 @@ public class CookableSteak : MonoBehaviour
     private void OnEnable()
     {
         cookButton?.selectEntered.AddListener(OnSelectEntered);
-        cookButton?.selectExited .AddListener(OnSelectExited);
+        cookButton?.selectExited.AddListener(OnSelectExited);
     }
 
     private void OnDisable()
     {
         cookButton?.selectEntered.RemoveListener(OnSelectEntered);
-        cookButton?.selectExited .RemoveListener(OnSelectExited);
+        cookButton?.selectExited.RemoveListener(OnSelectExited);
     }
 
     private void OnSelectEntered(SelectEnterEventArgs args)
@@ -125,11 +133,19 @@ public class CookableSteak : MonoBehaviour
 
     private void Update()
     {
-        if (!isCooking) return;
-
-        cookTimer += Time.deltaTime;
-        float t = Mathf.Clamp01(cookTimer / burnTimeThreshold);
-        matInstance.color = colorOverTime.Evaluate(t);
+        if (!isCooking)
+        {
+            cookTimerUI.SetActive(false);
+            cookTimer = 0f;
+        }
+        else
+        {
+            cookTimerUI.SetActive(true);
+            cookTimer += Time.deltaTime;
+            cookTimerText.text = $"{cookTimer}s";
+            float t = Mathf.Clamp01(cookTimer / burnTimeThreshold);
+            matInstance.color = colorOverTime.Evaluate(t);
+        }
     }
 
     private void OnTriggerEnter(Collider other)

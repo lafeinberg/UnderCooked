@@ -30,7 +30,7 @@ public class PlayerManager : NetworkBehaviour
     private Instruction currentInstruction;
 
     public InstructionToolbar instructionToolbar;
-    public Vector3 toolbarOffset = new Vector3(0f, -0.5f, -1.5f);
+    public Vector3 toolbarOffset = new Vector3(0f, 10f, 2f);
     public GameObject levelStartPanel;
     public GameObject levelCompletePanel;
 
@@ -41,19 +41,6 @@ public class PlayerManager : NetworkBehaviour
 
     void Update()
     {
-        if (avatarRoot != null)
-        {
-            var xrOrigin = FindObjectOfType<Unity.XR.CoreUtils.XROrigin>();
-            if (xrOrigin != null)
-            {
-                xrRigHead = xrOrigin.Camera.transform;
-                _cameraTransform = xrOrigin.Camera.transform;
-            }
-            // Sync networked avatar to local XR head position + rotation
-            //avatarRoot.position = xrRigHead.position;
-            //avatarRoot.rotation = xrRigHead.rotation;
-        }
-
         if (GameManager.Instance.GetCurrentInstruction(currentInstructionIndex).type == InstructionType.WayFind)
         {
             MockWayfind();
@@ -69,6 +56,7 @@ public class PlayerManager : NetworkBehaviour
         Debug.Log($"[PlayerManager.OnNetworkSpawn CLIENT-SIDE IsOwner EXECUTION] For my PlayerManager InstanceID: {GetInstanceID()}, My NetworkObject.OwnerClientId: {NetworkObject.OwnerClientId}, My LocalClientId is: {NetworkManager.Singleton.LocalClientId}.");
         LocalPlayer = this;
         _XrOrigin = FindObjectOfType<XROrigin>();
+        _cameraTransform = _XrOrigin.Camera.transform;
         if (_XrOrigin == null)
         {
             Debug.LogError("[Player Manager] No XROrigin found in scene!");
@@ -78,6 +66,11 @@ public class PlayerManager : NetworkBehaviour
         if (instructionToolbar == null)
             Debug.LogError("Couldn't find InstructionToolbar in scene!");
 
+        /*
+        instructionToolbar.transform.SetParent(_cameraTransform, false);
+        instructionToolbar.transform.localPosition = toolbarOffset;
+        instructionToolbar.transform.localRotation = Quaternion.identity;
+        */
     }
 
     void LateUpdate()
