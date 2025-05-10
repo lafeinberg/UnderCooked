@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.XR.Interaction.Toolkit;
 using UnityEngine.XR.Interaction.Toolkit.Interactables;
@@ -5,23 +6,78 @@ using UnityEngine.XR.Interaction.Toolkit.Interactables;
 [RequireComponent(typeof(Collider))]
 public class CookableSteak : MonoBehaviour
 {
-    [SerializeField] private XRBaseInteractable cookButton;
-    [SerializeField] private string panTag = "Pan";
-    [SerializeField] private float cookTimeThreshold = 3f;
-    [SerializeField] private float burnTimeThreshold = 6f;
+    [Header("Tags")]
+    [SerializeField] private string cookButtonTag    = "Button";
+    [SerializeField] private string panTag           = "Pan";
+
+    [Header("Prefabs & Thresholds")]
+    [SerializeField] private ParticleSystem cookingParticlesPrefab;
     [SerializeField] private GameObject cookedSteakPrefab;
     [SerializeField] private GameObject burntSteakPrefab;
-    [SerializeField] private ParticleSystem cookingParticles;
+    [SerializeField] private float cookTimeThreshold = 3f;
+    [SerializeField] private float burnTimeThreshold = 6f;
+
+    [Header("Visual")]
     [SerializeField] private Gradient colorOverTime;
 
-    private Renderer rend;
-    private Material matInstance;
-    private float cookTimer;
-    private bool isInPan;
-    private bool isCooking;
+    private XRBaseInteractable cookButton;
+    private Transform          nearestPan;
+    private Renderer           rend;
+    private Material           matInstance;
+    private float              cookTimer;
+    private bool               isInPan;
+    private bool               isCooking;
+    private ParticleSystem     activeParticles;
 
     private void Awake()
     {
+        // 1) Find *nearest* cook-button by tag
+        var buttons = GameObject.FindGameObjectsWithTag(cookButtonTag);
+        if (buttons.Length == 0)
+        {
+            Debug.LogError($"[CookableSteak] No GameObject found with tag '{cookButtonTag}'", this);
+        }
+        else
+        {
+            float minDist2 = float.MaxValue;
+            GameObject best = null;
+            foreach (var b in buttons)
+            {
+                float d2 = (b.transform.position - transform.position).sqrMagnitude;
+                if (d2 < minDist2)
+                {
+                    minDist2 = d2;
+                    best = b;
+                }
+            }
+            cookButton = best.GetComponent<XRBaseInteractable>();
+            Debug.Log($"[CookableSteak] Closest cookButton: {best.name}", this);
+        }
+
+        // 2) Find *nearest* pan by tag
+        var pans = GameObject.FindGameObjectsWithTag(panTag);
+        if (pans.Length == 0)
+        {
+            Debug.LogError($"[CookableSteak] No GameObject found with tag '{panTag}'", this);
+        }
+        else
+        {
+            float minDist2 = float.MaxValue;
+            GameObject best = null;
+            foreach (var p in pans)
+            {
+                float d2 = (p.transform.position - transform.position).sqrMagnitude;
+                if (d2 < minDist2)
+                {
+                    minDist2 = d2;
+                    best = p;
+                }
+            }
+            nearestPan = best.transform;
+            Debug.Log($"[CookableSteak] Closest pan: {best.name}", this);
+        }
+
+        // 3) Material instance for tinting
         rend = GetComponentInChildren<Renderer>();
         matInstance = Instantiate(rend.material);
         rend.material = matInstance;
@@ -29,67 +85,92 @@ public class CookableSteak : MonoBehaviour
 
     private void OnEnable()
     {
-        cookButton.activated.AddListener(OnActivated);
-        cookButton.deactivated.AddListener(OnDeactivated);
+        cookButton?.selectEntered.AddListener(OnSelectEntered);
+        cookButton?.selectExited .AddListener(OnSelectExited);
     }
 
     private void OnDisable()
     {
-        cookButton.activated.AddListener(OnActivated);
-        cookButton.deactivated.AddListener(OnDeactivated);
+        cookButton?.selectEntered.RemoveListener(OnSelectEntered);
+        cookButton?.selectExited .RemoveListener(OnSelectExited);
+    }
+
+    private void OnSelectEntered(SelectEnterEventArgs args)
+    {
+        StartCooking();
+    }
+
+    private void StartCooking()
+    {
+        if (!isInPan || isCooking) return;
+
+        isCooking = true;
+        cookTimer = 0f;
+
+        if (cookingParticlesPrefab != null)
+        {
+            activeParticles = Instantiate(
+                cookingParticlesPrefab,
+                transform.position,
+                Quaternion.identity
+            );
+            activeParticles.Play();
+        }
+    }
+
+    private void OnSelectExited(SelectExitEventArgs args)
+    {
+        if (isCooking) StopCookingAndFinish();
     }
 
     private void Update()
     {
         if (!isCooking) return;
+
         cookTimer += Time.deltaTime;
         float t = Mathf.Clamp01(cookTimer / burnTimeThreshold);
         matInstance.color = colorOverTime.Evaluate(t);
     }
 
-    private void OnActivated(ActivateEventArgs args)
-    {
-        if (isInPan && !isCooking)
-        {
-            isCooking = true;
-            cookingParticles?.Play();
-        }
-    }
-
-    private void OnDeactivated(DeactivateEventArgs args)
-    {
-        if (isCooking)
-        {
-            isCooking = false;
-            cookingParticles?.Stop();
-            FinishCooking();
-        }
-    }
-
-    private void FinishCooking()
-    {
-        if (cookTimer < cookTimeThreshold) return;
-        GameObject toSpawn = cookTimer < burnTimeThreshold ? cookedSteakPrefab : burntSteakPrefab;
-        Instantiate(toSpawn, transform.position, transform.rotation, transform.parent);
-        Destroy(gameObject);
-    }
-
     private void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag(panTag)) isInPan = true;
+        // only count entering *the* nearest pan
+        if (other.transform == nearestPan)
+            isInPan = true;
     }
 
     private void OnTriggerExit(Collider other)
     {
-        if (other.CompareTag(panTag))
+        if (other.transform != nearestPan) return;
+        isInPan = false;
+        if (isCooking)
+            StopCookingAndFinish();
+    }
+
+    private void StopCookingAndFinish()
+    {
+        isCooking = false;
+
+        if (activeParticles != null)
         {
-            isInPan = false;
-            if (isCooking)
-            {
-                isCooking = false;
-                cookingParticles?.Stop();
-                FinishCooking();
-            }
+            activeParticles.Stop();
+            Destroy(
+              activeParticles.gameObject,
+              activeParticles.main.duration + activeParticles.main.startLifetime.constantMax
+            );
+        }
+
+        if (cookTimer >= cookTimeThreshold)
+        {
+            var prefab = cookTimer < burnTimeThreshold
+                         ? cookedSteakPrefab
+                         : burntSteakPrefab;
+
+            Instantiate(prefab,
+                        transform.position,
+                        transform.rotation,
+                        transform.parent);
+            Destroy(gameObject);
         }
     }
 }

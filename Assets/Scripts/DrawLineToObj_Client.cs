@@ -6,14 +6,13 @@ using System.Collections.Generic;
 using Unity.Netcode;
 
 [RequireComponent(typeof(LineRenderer))]
-public class DrawLineToObj : NetworkBehaviour
+public class DrawLineToObjClient : NetworkBehaviour
 {
     [SerializeField] private NavMeshSurface navSurface;
     [SerializeField] private Transform playerTransform;
     [SerializeField] private Transform[] targets;
     [SerializeField] private LineRenderer lineRenderer;
     private int current = 1;
-
     private NavMeshPath navPath;
 
     private IEnumerator Start()
@@ -31,9 +30,10 @@ public class DrawLineToObj : NetworkBehaviour
 
     private void Update()
     {
-        if (!IsHost) {
+        if (IsHost) {
             return;
         }
+        
         if (targets == null || targets.Length == 0 || targets[0] == null)
         {
             return;

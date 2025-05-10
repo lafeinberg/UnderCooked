@@ -39,6 +39,8 @@ TagManager:
   - SamplesInfoPanel
   - QDSUIToggleCheckboxRadio
   - Pan
+  - Knife
+  - Button
   layers:
   - Default
   - TransparentFX
