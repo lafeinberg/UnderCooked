@@ -82,10 +82,10 @@ MonoBehaviour:
   - description: Add 2 pieces of chopped onion onto the burger
     type: 5
     targetObject: 
-  - description: Grab the ketchup bottle
+  - description: Grab the salt shaker
     type: 1
     targetObject: 
-  - description: Squeeze ketchup onto burger
+  - description: Shake salt onto burger
     type: 4
     targetObject: 
   - description: Finish with top bun

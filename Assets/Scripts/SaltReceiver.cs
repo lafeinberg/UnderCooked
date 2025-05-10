@@ -10,13 +10,15 @@ public class SaltReceiver : MonoBehaviour
     public GameObject saltBallPrefab;
     public Transform saltContainer;
 
+    private InstructionType instructionType = InstructionType.AddCondiment;
+
     public void AddSalt(float amount)
     {
         Debug.Log($"AddSalt called!");
         if (!canReceiveSalt) return;
 
         saltAmount += amount;
-        for (int i = 0; i < amount*5; i++)
+        for (int i = 0; i < amount * 5; i++)
         {
             Vector3 localPos = new Vector3(
                 Random.Range(-0.3f, 0.3f),
@@ -29,7 +31,7 @@ public class SaltReceiver : MonoBehaviour
         }
         Debug.Log($"{name} received salt! Total: {saltAmount}");
 
-
+        PlayerManager closestPlayer = GameManager.Instance.FindPlayerByObject();
+        closestPlayer.PlayerNotifyActionCompleted(instructionType);
     }
-
 }

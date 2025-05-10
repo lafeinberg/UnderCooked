@@ -23,11 +23,14 @@ public class PlayerManager : NetworkBehaviour
 
     public Transform avatarRoot;
     public Transform xrRigHead;
+    private XROrigin _XrOrigin;
+    private Transform _cameraTransform;
 
     public int currentInstructionIndex = 0;
     private Instruction currentInstruction;
 
     public InstructionToolbar instructionToolbar;
+    public Vector3 toolbarOffset = new Vector3(0f, -0.5f, -1.5f);
     public GameObject levelStartPanel;
     public GameObject levelCompletePanel;
 
@@ -44,55 +47,94 @@ public class PlayerManager : NetworkBehaviour
             if (xrOrigin != null)
             {
                 xrRigHead = xrOrigin.Camera.transform;
+                _cameraTransform = xrOrigin.Camera.transform;
             }
             // Sync networked avatar to local XR head position + rotation
             //avatarRoot.position = xrRigHead.position;
             //avatarRoot.rotation = xrRigHead.rotation;
         }
-    }
 
-    [ClientRpc]
-    public void TeleportClientRpc(Vector3 position, Quaternion rotation)
-    {
-        //if (!IsOwner) return;
-        Debug.Log($"[Player {OwnerClientId}] Received teleport RPC to {position}");
-
-        var xrOrigin = FindObjectOfType<Unity.XR.CoreUtils.XROrigin>();
-        if (xrOrigin != null)
+        if (GameManager.Instance.GetCurrentInstruction(currentInstructionIndex).type == InstructionType.WayFind)
         {
-            xrOrigin.transform.position = position;
-            xrOrigin.transform.rotation = rotation;
-            Debug.Log($"Teleported player {OwnerClientId} to {position}");
+            MockWayfind();
         }
     }
 
     public override void OnNetworkSpawn()
     {
-        if (NetworkGameLogicManager.Instance != null)
+        base.OnNetworkSpawn();
+
+        Debug.Log($"[PlayerManager.OnNetworkSpawn IsServer:{IsServer}, IsOwner:{IsOwner}, IsClient:{IsClient}] Object: {gameObject.name}, InstanceID: {GetInstanceID()}, NetworkObject.OwnerClientId: {NetworkObject.OwnerClientId}, NetworkManager.LocalClientId: {NetworkManager.Singleton.LocalClientId}");
+
+        Debug.Log($"[PlayerManager.OnNetworkSpawn CLIENT-SIDE IsOwner EXECUTION] For my PlayerManager InstanceID: {GetInstanceID()}, My NetworkObject.OwnerClientId: {NetworkObject.OwnerClientId}, My LocalClientId is: {NetworkManager.Singleton.LocalClientId}.");
+        LocalPlayer = this;
+        _XrOrigin = FindObjectOfType<XROrigin>();
+        if (_XrOrigin == null)
         {
-            NetworkGameLogicManager.Instance.RegisterPlayer(this);
-            Debug.Log($"[PlayerManager] Registered with GameLogicManager: {OwnerClientId}");
-            instructionToolbar = GetComponentInChildren<InstructionToolbar>(true);
-            if (instructionToolbar)
+            Debug.LogError("[Player Manager] No XROrigin found in scene!");
+        }
+
+        instructionToolbar = FindObjectOfType<InstructionToolbar>(true);
+        if (instructionToolbar == null)
+            Debug.LogError("Couldn't find InstructionToolbar in scene!");
+
+    }
+
+    void LateUpdate()
+    {
+        if (IsOwner && instructionToolbar != null && _cameraTransform != null)
+        {
+            Vector3 worldPos = _cameraTransform.TransformPoint(toolbarOffset);
+            /*
+            instructionToolbar.transform.position = worldPos;
+
+            instructionToolbar.transform.rotation =
+                Quaternion.LookRotation(instructionToolbar.transform.position - _cameraTransform.position);
+            */
+        }
+    }
+
+    [ClientRpc]
+    public void TeleportClientRpc(Vector3 position, Quaternion rotation, ClientRpcParams clientRpcParams = default)
+    {
+        Debug.Log($"[PlayerManager OwnerId: {OwnerClientId}][ClientRpc] TeleportClientRpc received. Target position: {position}. IsOwner: {IsOwner}.");
+
+        if (IsOwner)
+        {
+            if (_XrOrigin != null)
             {
-                Debug.Log("TOOLBAR FOUND");
+                Debug.Log($"[PlayerManager OwnerId: {OwnerClientId}] Teleporting own XROrigin from current: {_XrOrigin.transform.position} to target: {position}");
+
+                _XrOrigin.MoveCameraToWorldLocation(position);
+                _XrOrigin.MatchOriginUpCameraForward(rotation * Vector3.up, rotation * Vector3.forward); // Adjust if you want different up/forward alignment
+
+                Debug.Log($"[PlayerManager OwnerId: {OwnerClientId}] XROrigin teleported. New position: {_XrOrigin.transform.position}");
+            }
+            else
+            {
+                Debug.LogError($"[PlayerManager OwnerId: {OwnerClientId}] _XrOrigin is null. Cannot execute teleport.");
+
             }
         }
         else
         {
-            Debug.LogError("NetworkGameLogicManager.Instance is NULL!");
+            Debug.LogWarning($"[PlayerManager OwnerId: {OwnerClientId}][ClientRpc] TeleportClientRpc received, but IsOwner is false. Ignoring teleport for this instance.");
         }
     }
 
-
     [ClientRpc]
-    public void StartLevelClientRpc(int levelNumber)
+    public void StartLevelClientRpc(int levelNumber, float overlayDuration)
     {
-        Debug.Log("Starting level on client");
-        NetworkGameLogicManager.Instance.currentLevelInstructions = NetworkGameLogicManager.Instance.allLevelInstructionSets[levelNumber - 1];
-        instructionToolbar.ActivateInstructionToolbar(NetworkGameLogicManager.Instance.GetCurrentInstruction(currentInstructionIndex));
-
+        StartCoroutine(ActivateToolbarAfterDelay(levelNumber, overlayDuration));
     }
+
+    private IEnumerator ActivateToolbarAfterDelay(int levelNumber, float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        var instruction = GameManager.Instance.GetCurrentInstruction(currentInstructionIndex);
+        instructionToolbar.ShowInstruction(instruction);
+    }
+
 
     // DUMMY METHOD FOR TESTING 
     void OnCollisionEnter(Collision collision)
@@ -104,13 +146,27 @@ public class PlayerManager : NetworkBehaviour
         }
     }
 
+
+    // CALL THIS FOR STEP MANAGEMENT
+    public void PlayerNotifyActionCompleted(InstructionType type)
+    {
+        Debug.Log("player action completed");
+        Debug.Log($"Checking instruction type, recieved: {type}");
+        if (type == GameManager.Instance.GetCurrentInstruction(currentInstructionIndex).type)
+        {
+            PlayerStepCompleted();
+        }
+
+    }
+
     void PlayerStepCompleted()
     {
-        if (currentInstructionIndex < NetworkGameLogicManager.Instance.GetInstructionCount())
+        Debug.Log("current step completed");
+        if (currentInstructionIndex < GameManager.Instance.GetInstructionCount())
         {
             currentInstructionIndex++;
-            NetworkGameLogicManager.Instance.UpdatePlayerProgress(this);
-            instructionToolbar.ShowInstruction(NetworkGameLogicManager.Instance.GetCurrentInstruction(currentInstructionIndex));
+            //GameManager.Instance.UpdatePlayerProgress(this);
+            instructionToolbar.ShowInstruction(GameManager.Instance.GetCurrentInstruction(currentInstructionIndex));
         }
         else
         {
@@ -118,26 +174,17 @@ public class PlayerManager : NetworkBehaviour
         }
     }
 
-    public void RecordFinalTime(int levelNumber, float time)
-    {
-        levelTimes[levelNumber] = time;
-    }
-
     public void RegisterPlayerLevelComplete()
     {
-        int currentLevel = NetworkGameLogicManager.Instance.GetCurrentLevel();
+        int currentLevel = GameManager.Instance.GetCurrentLevel();
         levelComplete[currentLevel] = true;
-        NetworkGameLogicManager.Instance.RegisterPlayerLevelComplete(this);
+        GameManager.Instance.RegisterPlayerLevelComplete(this);
     }
 
-    public LevelStats GetLevelStats(int levelNumber)
+    private System.Collections.IEnumerator MockWayfind()
     {
-        if (levelStats.ContainsKey(levelNumber))
-        {
-            return levelStats[levelNumber];
-        }
-
-        return null;
+        yield return new WaitForSeconds(4);
+        PlayerNotifyActionCompleted(InstructionType.WayFind);
     }
 }
 

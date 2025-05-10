@@ -32,7 +32,7 @@ MonoBehaviour:
     type: 1
     targetObject: 
   - description: Walk to the grill
-    type: 5
+    type: 6
     targetObject: 
   - description: Drop the hamburger patty on the grill
     type: 0
