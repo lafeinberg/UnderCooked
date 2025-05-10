@@ -62,6 +62,7 @@ public class ProxyGrabSpawner : NetworkBehaviour
         if (netObj.TryGetComponent(out XRGrabInteractable newInteractable))
         {
             interactionManager.SelectEnter(lastInteractor, newInteractable);
+            lastInteractor = null;
         }
     }
 }

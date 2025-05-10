@@ -1209,12 +1209,12 @@ PrefabInstance:
       objectReference: {fileID: 5358844088564582620, guid: 2b6dab709dc28bd4c98b9d7d53793dc6, type: 3}
     - target: {fileID: 874452183138526564, guid: 3967f87296c892e40b57e37bc8601550, type: 3}
       propertyPath: m_NetworkConfig.Prefabs.NetworkPrefabsLists.Array.size
-      value: 3
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 874452183138526564, guid: 3967f87296c892e40b57e37bc8601550, type: 3}
       propertyPath: m_NetworkConfig.Prefabs.NetworkPrefabsLists.Array.data[3]
       value: 
-      objectReference: {fileID: 11400000, guid: 7c6e842cd7704084fa88682fe4e71ae6, type: 2}
+      objectReference: {fileID: 11400000, guid: fbd7599fc8166364c8401fd335e59e33, type: 2}
     - target: {fileID: 4145292139985048678, guid: 3967f87296c892e40b57e37bc8601550, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
