@@ -252,8 +252,8 @@ namespace XRMultiplayer
                 m_XROrigin = FindFirstObjectByType<XROrigin>();
                 if (m_XROrigin != null)
                 {
-                    Vector3 hostSpawnPos = new Vector3(-0.874f, -2.56f, 2);
-                    Vector3 clientSpawnPos = new Vector3(-0.06f, -1.955056f, 2);
+                    Vector3 hostSpawnPos = new Vector3(-24.12f, 1.36144f, -12f);
+                    Vector3 clientSpawnPos = new Vector3(-26.12f, 1.36144f, -12f);
 
                     Vector3 spawnPos = IsServer ? hostSpawnPos : clientSpawnPos;
 

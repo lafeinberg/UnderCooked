@@ -95,7 +95,7 @@ public class GameManager : NetworkBehaviour
         loseUI.SetActive(false);
         timerObject.SetActive(false);
         showReadyUI.Value = false;
-        nextLevelUI.SetActive(true);
+        nextLevelUI.SetActive(false);
         uiShown = true;
         readyCountText.text = "Players Ready: 0 / 2";
         currentLevelInstructions = allLevelInstructionSets[0];
