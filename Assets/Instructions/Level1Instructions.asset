@@ -15,25 +15,25 @@ MonoBehaviour:
   instructions:
   - description: Walk to the ingredients table
     type: 6
-    targetObject: 
+    targetObject: Table
   - description: 'Grab top and bottom burger buns  '
     type: 1
     targetObject: 
   - description: Walk to the assembly counter
     type: 6
-    targetObject: 
+    targetObject: Table
   - description: 'Drop both burger buns onto the plate '
     type: 0
     targetObject: 
   - description: Walk to the ingredients table
     type: 6
-    targetObject: 
+    targetObject: Table
   - description: Grab a hamburger patty
     type: 1
     targetObject: 
   - description: Walk to the grill
     type: 6
-    targetObject: 
+    targetObject: Stove
   - description: Drop the hamburger patty on the grill
     type: 0
     targetObject: 
@@ -48,7 +48,7 @@ MonoBehaviour:
     targetObject: 
   - description: Walk to the assembly counter
     type: 6
-    targetObject: 
+    targetObject: Table
   - description: Drop the patty onto the bottom burger bun
     type: 0
     targetObject: 
@@ -57,13 +57,13 @@ MonoBehaviour:
     targetObject: 
   - description: Walk to the ingredients table
     type: 5
-    targetObject: 
+    targetObject: Table
   - description: Grab a cheese slice
     type: 1
     targetObject: 
   - description: Walk to the assembly counter
     type: 6
-    targetObject: 
+    targetObject: Table
   - description: Drop the cheese on top of the patty
     type: 0
     targetObject: 

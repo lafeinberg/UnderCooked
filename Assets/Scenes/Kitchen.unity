@@ -2500,6 +2500,10 @@ PrefabInstance:
       propertyPath: offlinePosition.x
       value: -25.12
       objectReference: {fileID: 0}
+    - target: {fileID: 3162837999534115201, guid: 77ac6b10722bcca4a8baf70e44d89e78, type: 3}
+      propertyPath: offlinePosition.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3245387219685669285, guid: 77ac6b10722bcca4a8baf70e44d89e78, type: 3}
       propertyPath: m_PhysicsLayerMask.m_Bits
       value: 513
@@ -2706,7 +2710,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7174019212652907432, guid: 77ac6b10722bcca4a8baf70e44d89e78, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0
+      value: -25.12
       objectReference: {fileID: 0}
     - target: {fileID: 7174019212652907432, guid: 77ac6b10722bcca4a8baf70e44d89e78, type: 3}
       propertyPath: m_LocalPosition.y
@@ -3124,6 +3128,10 @@ PrefabInstance:
     - target: {fileID: 4571350502258570345, guid: 25767a609b5019d4781420cc742d2092, type: 3}
       propertyPath: m_Name
       value: LevelStartPanel
+      objectReference: {fileID: 0}
+    - target: {fileID: 5111594773980737960, guid: 25767a609b5019d4781420cc742d2092, type: 3}
+      propertyPath: m_DistanceFromFace
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 5947895632311781288, guid: 25767a609b5019d4781420cc742d2092, type: 3}
       propertyPath: m_Pivot.x
@@ -8756,10 +8764,11 @@ MonoBehaviour:
   navSurface: {fileID: 300532435}
   playerTransform: {fileID: 2091909092}
   targets:
-  - {fileID: 1186172007}
-  - {fileID: 306617046}
-  - {fileID: 1789131314}
+  - {fileID: 2137872872}
+  - {fileID: 1141334492}
+  - {fileID: 718906916}
   lineRenderer: {fileID: 461288647}
+  current: -1
 --- !u!120 &461288647
 LineRenderer:
   serializedVersion: 2
@@ -8879,10 +8888,11 @@ MonoBehaviour:
   navSurface: {fileID: 328195908}
   playerTransform: {fileID: 2091909092}
   targets:
-  - {fileID: 2137872872}
-  - {fileID: 1141334492}
-  - {fileID: 718906916}
+  - {fileID: 1186172007}
+  - {fileID: 306617046}
+  - {fileID: 1789131314}
   lineRenderer: {fileID: 461288647}
+  current: -1
 --- !u!1001 &473072437
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -19876,7 +19886,7 @@ Transform:
   m_GameObject: {fileID: 1206219234}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -2.8145154, y: -1.9930563, z: -0.6855581}
+  m_LocalPosition: {x: -2.8145154, y: -1.06, z: -0.6855581}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -20123,7 +20133,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &1238650323
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -29422,7 +29432,7 @@ Transform:
   m_GameObject: {fileID: 1894140684}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -1, z: -0, w: 0}
-  m_LocalPosition: {x: 1.41, y: -1.9550564, z: -0.71}
+  m_LocalPosition: {x: 1.41, y: -1.06, z: -0.71}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

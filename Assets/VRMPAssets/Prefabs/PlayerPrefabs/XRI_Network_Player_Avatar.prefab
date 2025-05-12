@@ -493,11 +493,14 @@ MonoBehaviour:
   xrRigHead: {fileID: 0}
   currentInstructionIndex: 0
   instructionToolbar: {fileID: 0}
+  toolbarOffset: {x: 0, y: 10, z: 2}
   levelStartPanel: {fileID: 0}
   levelCompletePanel: {fileID: 0}
   levelComplete: 
   levelWon: 
   levelTimes: []
+  pathVisualizer: {fileID: 0}
+  pathVisualizerClient: {fileID: 0}
 --- !u!1 &5908336471056132768
 GameObject:
   m_ObjectHideFlags: 0

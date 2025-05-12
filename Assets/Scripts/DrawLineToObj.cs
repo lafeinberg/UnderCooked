@@ -12,7 +12,7 @@ public class DrawLineToObj : NetworkBehaviour
     [SerializeField] private Transform playerTransform;
     [SerializeField] private Transform[] targets;
     [SerializeField] private LineRenderer lineRenderer;
-    private int current = 1;
+    public int current = -1;
 
     private NavMeshPath navPath;
 
@@ -31,9 +31,11 @@ public class DrawLineToObj : NetworkBehaviour
 
     private void Update()
     {
-        if (!IsHost) {
+        if (!IsHost)
+        {
             return;
         }
+        if (current < 0) return;
         if (targets == null || targets.Length == 0 || targets[0] == null)
         {
             return;
@@ -100,5 +102,28 @@ public class DrawLineToObj : NetworkBehaviour
             }
         }
         return smooth;
+    }
+
+    public void SetTarget(int i)
+    {
+        if (i < 0 || i > 2) return;
+        current = i;
+        Debug.Log($"[DrawLineToObj] SetTarget called with index {i}");
+    }
+    public void ClearPath()
+    {
+        Debug.Log("[DrawLineToObj] ClearPath called");
+        current = -1;
+        lineRenderer.positionCount = 0;
+    }
+
+    public bool ReachedTarget(float threshold = 1f)
+    {
+        if (current < 0 || targets.Length <= current)
+            return false;
+
+        bool reach = Vector3.Distance(playerTransform.position, targets[current].position) <= threshold;
+        Debug.Log($"[DrawLineToObj] Isreach: {reach}");
+        return reach;
     }
 }

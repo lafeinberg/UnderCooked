@@ -39,17 +39,44 @@ public class PlayerManager : NetworkBehaviour
     public List<float> levelTimes = new List<float>();
 
 
+    public DrawLineToObj pathVisualizer;
+    public DrawLineToObjClient pathVisualizerClient;
+    private bool isExecutingInstruction = false;
+
     void Update()
     {
-        if (GameManager.Instance.GetCurrentInstruction(currentInstructionIndex).type == InstructionType.WayFind)
+        //if (GameManager.Instance.GetCurrentInstruction(currentInstructionIndex).type == InstructionType.WayFind)
+        //{
+        //    MockWayfind();
+        //}
+        if (!IsOwner)
+            return;
+
+        // This is a logic executed once when a new instruction shows up. Used to initialize or set up the scene for the task
+        Debug.Log($"[PlayerManager] Update called. isExecutingInstruction={isExecutingInstruction}");
+
+        if (isExecutingInstruction) return;
+
+        currentInstruction = GameManager.Instance.GetCurrentInstruction(currentInstructionIndex);
+        Debug.Log($"currentInstructionIndex={currentInstructionIndex}");
+
+        switch (currentInstruction.type)
         {
-            MockWayfind();
+            case InstructionType.WayFind:
+                StartCoroutine(HandleWayfindingInstruction(currentInstruction));
+                break;
+                // Other instruction types will be handled externally (e.g., Grab/Salt via object interaction)
         }
+
+        isExecutingInstruction = true;
     }
 
     public override void OnNetworkSpawn()
     {
         base.OnNetworkSpawn();
+
+        if (!IsOwner)
+            return;
 
         Debug.Log($"[PlayerManager.OnNetworkSpawn IsServer:{IsServer}, IsOwner:{IsOwner}, IsClient:{IsClient}] Object: {gameObject.name}, InstanceID: {GetInstanceID()}, NetworkObject.OwnerClientId: {NetworkObject.OwnerClientId}, NetworkManager.LocalClientId: {NetworkManager.Singleton.LocalClientId}");
 
@@ -66,6 +93,19 @@ public class PlayerManager : NetworkBehaviour
         if (instructionToolbar == null)
             Debug.LogError("Couldn't find InstructionToolbar in scene!");
 
+        pathVisualizer = FindObjectOfType<DrawLineToObj>();
+        Debug.Log($"[PlayerManager] Automatically found pathVisualizer: {pathVisualizer?.gameObject.name}");
+        if (pathVisualizer == null)
+        {
+            Debug.LogError("Couldn't find DrawLineToObj!");
+        }
+
+        pathVisualizerClient = FindObjectOfType<DrawLineToObjClient>();
+        Debug.Log($"[PlayerManager] Automatically found pathVisualizerClient: {pathVisualizer?.gameObject.name}");
+        if (pathVisualizerClient == null)
+        {
+            Debug.LogError("Couldn't find DrawLineToObjClient!");
+        }
         /*
         instructionToolbar.transform.SetParent(_cameraTransform, false);
         instructionToolbar.transform.localPosition = toolbarOffset;
@@ -178,6 +218,44 @@ public class PlayerManager : NetworkBehaviour
     {
         yield return new WaitForSeconds(4);
         PlayerNotifyActionCompleted(InstructionType.WayFind);
+    }
+
+    private IEnumerator HandleWayfindingInstruction(Instruction instruction)
+    {
+        int targetIndex = instruction.targetObject switch
+        {
+            "Fridge" => 0,
+            "Stove" => 1,
+            "Table" => 2,
+            _ => -1
+        };
+
+        Debug.Log($"[PlayerManager IsHost:{IsHost} ,targetIndex {targetIndex}");
+
+        if (IsHost)
+        {
+            pathVisualizer.SetTarget(targetIndex);
+        }
+        else
+        {
+            pathVisualizerClient.SetTarget(targetIndex);
+        }
+
+        while (!pathVisualizer.ReachedTarget(1f) && !pathVisualizerClient.ReachedTarget(1f))
+        {
+            yield return null;
+        }
+
+        if (IsHost)
+        {
+            pathVisualizer.ClearPath();
+        }
+        else
+        {
+            pathVisualizerClient.ClearPath();
+        }
+        PlayerNotifyActionCompleted(InstructionType.WayFind);
+        isExecutingInstruction = false;
     }
 }
 
