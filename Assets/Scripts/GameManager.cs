@@ -368,16 +368,16 @@ public class GameManager : NetworkBehaviour
     private System.Collections.IEnumerator ShowOverlay(string levelName, float duration)
     {
         Debug.Log("SHOWING START LEVEL UI");
-        startLevelPanel.transform.position =
-    Camera.main.transform.position;
-        startLevelPanel.transform.rotation =
-            Quaternion.LookRotation(Camera.main.transform.forward);
-        startLevelPanel.SetActive(true);
+        //startLevelPanel.transform.position =
+        //Camera.main.transform.position;
+        //startLevelPanel.transform.rotation =
+        //uaternion.LookRotation(Camera.main.transform.forward);
         startLevelPanel.SetActive(true);
         startLevelText.text = levelName;
         yield return new WaitForSeconds(duration);
-        startLevelPanel.SetActive(false);
+        startLevelText.text = "Start!";
         yield return new WaitForSeconds(2);
+        startLevelPanel.SetActive(false);
     }
 
     // only for the progress Ui on the fridge

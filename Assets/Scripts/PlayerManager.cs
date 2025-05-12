@@ -38,6 +38,8 @@ public class PlayerManager : NetworkBehaviour
     public List<bool> levelWon = new List<bool>();
     public List<float> levelTimes = new List<float>();
 
+    private bool isInKitchen = false;
+
 
     public DrawLineToObj pathVisualizer;
     public DrawLineToObjClient pathVisualizerClient;
@@ -53,7 +55,7 @@ public class PlayerManager : NetworkBehaviour
             return;
 
         // This is a logic executed once when a new instruction shows up. Used to initialize or set up the scene for the task
-        Debug.Log($"[PlayerManager] Update called. isExecutingInstruction={isExecutingInstruction}");
+        //Debug.Log($"[PlayerManager] Update called. isExecutingInstruction={isExecutingInstruction}");
 
         if (isExecutingInstruction) return;
 
@@ -63,7 +65,10 @@ public class PlayerManager : NetworkBehaviour
         switch (currentInstruction.type)
         {
             case InstructionType.WayFind:
-                StartCoroutine(HandleWayfindingInstruction(currentInstruction));
+                if (isInKitchen)
+                {
+                    StartCoroutine(HandleWayfindingInstruction(currentInstruction));
+                }
                 break;
                 // Other instruction types will be handled externally (e.g., Grab/Salt via object interaction)
         }
@@ -89,22 +94,15 @@ public class PlayerManager : NetworkBehaviour
             Debug.LogError("[Player Manager] No XROrigin found in scene!");
         }
 
-        instructionToolbar = FindObjectOfType<InstructionToolbar>(true);
+        //instructionToolbar = FindObjectOfType<InstructionToolbar>(true);
+        instructionToolbar = _XrOrigin.Camera.GetComponentInChildren<InstructionToolbar>(true);
         if (instructionToolbar == null)
+        {
             Debug.LogError("Couldn't find InstructionToolbar in scene!");
-
-        pathVisualizer = FindObjectOfType<DrawLineToObj>();
-        Debug.Log($"[PlayerManager] Automatically found pathVisualizer: {pathVisualizer?.gameObject.name}");
-        if (pathVisualizer == null)
-        {
-            Debug.LogError("Couldn't find DrawLineToObj!");
         }
-
-        pathVisualizerClient = FindObjectOfType<DrawLineToObjClient>();
-        Debug.Log($"[PlayerManager] Automatically found pathVisualizerClient: {pathVisualizer?.gameObject.name}");
-        if (pathVisualizerClient == null)
+        else
         {
-            Debug.LogError("Couldn't find DrawLineToObjClient!");
+            Debug.Log($"TOOLBAR FOUND IN SCENE FOR NetworkObject.OwnerClientId: {NetworkObject.OwnerClientId}");
         }
         /*
         instructionToolbar.transform.SetParent(_cameraTransform, false);
@@ -117,7 +115,7 @@ public class PlayerManager : NetworkBehaviour
     {
         if (IsOwner && instructionToolbar != null && _cameraTransform != null)
         {
-            Vector3 worldPos = _cameraTransform.TransformPoint(toolbarOffset);
+            //Vector3 worldPos = _cameraTransform.TransformPoint(toolbarOffset);
             /*
             instructionToolbar.transform.position = worldPos;
 
@@ -144,9 +142,23 @@ public class PlayerManager : NetworkBehaviour
                     _XrOrigin.RotateAroundCameraUsingOriginUp(180f);
                     Debug.Log("Rotated 180");
                 }
-                //_XrOrigin.MatchOriginUpCameraForward(rotation * Vector3.up, rotation * Vector3.forward); // Adjust if you want different up/forward alignment
+
+                pathVisualizer = FindObjectOfType<DrawLineToObj>();
+                Debug.Log($"[PlayerManager] Automatically found pathVisualizer: {pathVisualizer?.gameObject.name} for {NetworkObject.OwnerClientId}");
+                if (pathVisualizer == null)
+                {
+                    Debug.LogError("Couldn't find DrawLineToObj!");
+                }
+
+                pathVisualizerClient = FindObjectOfType<DrawLineToObjClient>();
+                Debug.Log($"[PlayerManager] Automatically found pathVisualizerClient: {pathVisualizer?.gameObject.name} for {NetworkObject.OwnerClientId}");
+                if (pathVisualizerClient == null)
+                {
+                    Debug.LogError("Couldn't find DrawLineToObjClient!");
+                }
 
                 Debug.Log($"[PlayerManager OwnerId: {OwnerClientId}] XROrigin teleported. New position: {_XrOrigin.transform.position}");
+                isInKitchen = true;
             }
             else
             {
