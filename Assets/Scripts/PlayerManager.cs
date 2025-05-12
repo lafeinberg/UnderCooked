@@ -139,7 +139,12 @@ public class PlayerManager : NetworkBehaviour
                 Debug.Log($"[PlayerManager OwnerId: {OwnerClientId}] Teleporting own XROrigin from current: {_XrOrigin.transform.position} to target: {position}");
 
                 _XrOrigin.MoveCameraToWorldLocation(position);
-                _XrOrigin.MatchOriginUpCameraForward(rotation * Vector3.up, rotation * Vector3.forward); // Adjust if you want different up/forward alignment
+                if (!IsHost)
+                {
+                    _XrOrigin.RotateAroundCameraUsingOriginUp(180f);
+                    Debug.Log("Rotated 180");
+                }
+                //_XrOrigin.MatchOriginUpCameraForward(rotation * Vector3.up, rotation * Vector3.forward); // Adjust if you want different up/forward alignment
 
                 Debug.Log($"[PlayerManager OwnerId: {OwnerClientId}] XROrigin teleported. New position: {_XrOrigin.transform.position}");
             }
@@ -214,11 +219,6 @@ public class PlayerManager : NetworkBehaviour
         GameManager.Instance.RegisterPlayerLevelComplete(this);
     }
 
-    private System.Collections.IEnumerator MockWayfind()
-    {
-        yield return new WaitForSeconds(4);
-        PlayerNotifyActionCompleted(InstructionType.WayFind);
-    }
 
     private IEnumerator HandleWayfindingInstruction(Instruction instruction)
     {
@@ -256,6 +256,11 @@ public class PlayerManager : NetworkBehaviour
         }
         PlayerNotifyActionCompleted(InstructionType.WayFind);
         isExecutingInstruction = false;
+    }
+
+    public string GetCurrentTargetObjectName()
+    {
+        return GameManager.Instance.GetCurrentInstruction(currentInstructionIndex).targetObject;
     }
 }
 

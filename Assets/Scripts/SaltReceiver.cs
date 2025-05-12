@@ -31,7 +31,13 @@ public class SaltReceiver : MonoBehaviour
         }
         Debug.Log($"{name} received salt! Total: {saltAmount}");
 
-        PlayerManager closestPlayer = GameManager.Instance.FindPlayerByObject();
-        closestPlayer.PlayerNotifyActionCompleted(instructionType);
+        if (saltAmount >= 3)
+        {
+            Debug.Log($"[SaltReceiver] Finished salting target: {name}");
+
+            PlayerManager closestPlayer = GameManager.Instance.FindPlayerByObject();
+            closestPlayer.PlayerNotifyActionCompleted(instructionType);
+        }
+
     }
 }

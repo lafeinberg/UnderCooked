@@ -75,6 +75,11 @@ public class IngredientStacker : MonoBehaviour
         {
             root.gameObject.AddComponent<XRGrabInteractable>();
         }
+
+        //Notify Manager
+        PlayerManager closestPlayer = GameManager.Instance.FindPlayerByObject();
+        closestPlayer.PlayerNotifyActionCompleted(InstructionType.AssembleBurger);
+        
     }
 }
 

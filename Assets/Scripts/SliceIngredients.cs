@@ -1,4 +1,5 @@
 using UnityEngine;
+using XRMultiplayer;
 
 [RequireComponent(typeof(Collider))]
 public class SliceIngredients : MonoBehaviour
@@ -45,6 +46,20 @@ public class SliceIngredients : MonoBehaviour
 
     private void SliceTomato()
     {
+        PlayerManager closestPlayer = GameManager.Instance.FindPlayerByObject();
+        string expected = closestPlayer.GetCurrentTargetObjectName();
+
+        if (gameObject.name.ToLower().Contains(expected.ToLower()))
+        {
+            Debug.Log($"[SliceIngredients] Successfully sliced correct ingredient: {gameObject.name}");
+           
+            closestPlayer.PlayerNotifyActionCompleted(InstructionType.ChopItem);
+        }
+        else
+        {
+            Debug.Log($"[SliceIngredients] Sliced object: {gameObject.name}, but expected: {expected}. Ignored.");
+        }
+
         Instantiate(
             slicedTomatoPrefab,
             transform.position,

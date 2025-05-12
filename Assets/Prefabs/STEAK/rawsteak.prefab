@@ -19,6 +19,7 @@ GameObject:
   - component: {fileID: 4974686806571546224}
   - component: {fileID: 4180456641518791881}
   - component: {fileID: 1494517698028881020}
+  - component: {fileID: 1291844303517544898}
   m_Layer: 9
   m_Name: rawsteak
   m_TagString: Ingredient
@@ -379,13 +380,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 154f84814b64440d0ae0cbb404685fbe, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cookButton: {fileID: 4526435834897576052, guid: dab4917e69b6b4d1cbb3c6b87dacf2a8, type: 3}
-  cookingParticlesPrefab: {fileID: 7915679722673185347, guid: 2a1608d6c1e5b4504bca27cca105a3c3, type: 3}
+  cookButtonTag: Button
   panTag: Pan
-  cookTimeThreshold: 3
-  burnTimeThreshold: 6
+  cookingParticlesPrefab: {fileID: 7915679722673185347, guid: 2a1608d6c1e5b4504bca27cca105a3c3, type: 3}
   cookedSteakPrefab: {fileID: 6847374619830079393, guid: 527a427ffd7624407b93f3ed5b09cb3c, type: 3}
   burntSteakPrefab: {fileID: 416429732306499086, guid: 448553a9d4b714a1ba148884d5dcc918, type: 3}
+  cookTimeThreshold: 3
+  burnTimeThreshold: 6
   colorOverTime:
     serializedVersion: 2
     key0: {r: 1, g: 1, b: 1, a: 1}
@@ -416,6 +417,8 @@ MonoBehaviour:
     m_ColorSpace: -1
     m_NumColorKeys: 2
     m_NumAlphaKeys: 2
+  cookTimerUI: {fileID: 0}
+  cookTimerText: {fileID: 0}
 --- !u!65 &1494517698028881020
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -437,3 +440,15 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.74428225, y: 0.1400006, z: 1.0980406}
   m_Center: {x: 0.041553512, y: 0.000000037252903, z: -0.06915285}
+--- !u!114 &1291844303517544898
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 44075783871523505}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dfc0746c5b1f7d946bc456dd772ca1d4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
