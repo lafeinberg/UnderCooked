@@ -33,9 +33,7 @@ public class GameManager : NetworkBehaviour
     public TextMeshProUGUI nextLevelReadyText;
 
     [Header("Timer")]
-    public GameObject timerObject;
     private float timer = 0f;
-    public TextMeshProUGUI timerText;
 
 
     [Header("Network Variables")]
@@ -48,7 +46,7 @@ public class GameManager : NetworkBehaviour
     private NetworkVariable<int> winner = new NetworkVariable<int>(-1, NetworkVariableReadPermission.Everyone,
     NetworkVariableWritePermission.Server); // -1 = no one, 0 = host, 1 = client
     private NetworkVariable<int> nextLevelReadyCount = new NetworkVariable<int>(0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
-
+    public NetworkVariable<float> syncedGameTime = new NetworkVariable<float>(0f, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
 
     public List<PlayerManager> players = new List<PlayerManager>();
     private bool localReady = false;
@@ -93,7 +91,6 @@ public class GameManager : NetworkBehaviour
     {
         winUI.SetActive(false);
         loseUI.SetActive(false);
-        timerObject.SetActive(false);
         showReadyUI.Value = false;
         nextLevelUI.SetActive(false);
         uiShown = true;
@@ -252,10 +249,7 @@ public class GameManager : NetworkBehaviour
         if (matchRunning)
         {
             timer += Time.deltaTime;
-            int minutes = Mathf.FloorToInt(timer / 60);
-            int seconds = Mathf.FloorToInt(timer % 60);
-
-            timerText.text = string.Format("{0}:{1:00}", minutes, seconds);
+            syncedGameTime.Value = timer;
         }
 
         nextLevelReadyText.text = $"Players Ready: {nextLevelReadyCount.Value} / 2";
@@ -297,6 +291,8 @@ public class GameManager : NetworkBehaviour
 
     public void StartLevel(int currentLevel)
     {
+        timer = 0f;
+        matchRunning = true;
         winner.Value = -1;
         levelWinnerDetected = false;
         if (currentLevel <= allLevelInstructionSets.Count)
@@ -309,9 +305,10 @@ public class GameManager : NetworkBehaviour
             Debug.LogError($"No instructions found for Level {currentLevel}");
             return;
         }
+
+        ShowLevelClientRpc($"Level {currentLevel}", 4f);
         foreach (var player in players)
         {
-            ShowLevelClientRpc($"Level {currentLevel}", 4f);
             player.StartLevelClientRpc(currentLevel, 6f);
         }
     }
@@ -321,7 +318,6 @@ public class GameManager : NetworkBehaviour
     {
         Debug.Log("Level ended -- showing next level UI");
         matchRunning = false;
-        timer = 0f;
         nextLevelUI.SetActive(true);
 
         levelEndIntroText.text = $"Level {currentLevel} Complete!";
@@ -360,18 +356,13 @@ public class GameManager : NetworkBehaviour
     {
         {
             StartCoroutine(ShowOverlay(levelName, duration));
-            matchRunning = true;
-            timerObject.SetActive(true);
         }
     }
 
     private System.Collections.IEnumerator ShowOverlay(string levelName, float duration)
     {
         Debug.Log("SHOWING START LEVEL UI");
-        //startLevelPanel.transform.position =
-        //Camera.main.transform.position;
-        //startLevelPanel.transform.rotation =
-        //uaternion.LookRotation(Camera.main.transform.forward);
+
         startLevelPanel.SetActive(true);
         startLevelText.text = levelName;
         yield return new WaitForSeconds(duration);
@@ -393,35 +384,6 @@ public class GameManager : NetworkBehaviour
 
     }
     */
-
-    public PlayerManager FindPlayerByObject()
-    {
-        float closestDistanceSqr = float.MaxValue;
-        PlayerManager closestPlayer = null;
-
-        foreach (var player in players)
-        {
-            Vector3 playerPos = player.avatarRoot != null ? player.avatarRoot.position : player.transform.position;
-
-            float distSqr = (playerPos - transform.position).sqrMagnitude;
-            if (distSqr < closestDistanceSqr)
-            {
-                closestDistanceSqr = distSqr;
-                closestPlayer = player;
-            }
-        }
-
-        if (closestPlayer != null && closestDistanceSqr <= proximityThreshold * proximityThreshold)
-        {
-            Debug.Log($"Closest player to object is {closestPlayer.OwnerClientId}");
-        }
-        else
-        {
-            Debug.LogWarning("No player found within proximity threshold!");
-        }
-
-        return closestPlayer;
-    }
 
     public Instruction GetCurrentInstruction(int index)
     {

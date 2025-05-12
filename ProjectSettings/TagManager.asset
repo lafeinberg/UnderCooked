@@ -41,6 +41,8 @@ TagManager:
   - Pan
   - Knife
   - Button
+  - ClientTimerUI
+  - HostTimerUI
   layers:
   - Default
   - TransparentFX

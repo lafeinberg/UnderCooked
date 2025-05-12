@@ -144,6 +144,9 @@ PlayerSettings:
   preloadedAssets:
   - {fileID: -944628639613478452, guid: c348712bda248c246b8c49b3db54643f, type: 3}
   - {fileID: 0}
+  - {fileID: 4525604239848415183, guid: dc5f8a551d086419cbb078ad4d383ec0, type: 2}
+  - {fileID: 11400000, guid: 21c2fc3e2b29e4f128a1c8515e4af7b5, type: 2}
+  - {fileID: 9035027179785765548, guid: c9af54a5bb760439aaaf82d25a048000, type: 2}
   metroInputSource: 0
   wsaTransparentSwapchain: 0
   m_HolographicPauseOnTrackingLoss: 1
@@ -956,11 +959,11 @@ PlayerSettings:
   apiCompatibilityLevel: 6
   activeInputHandler: 1
   windowsGamepadBackendHint: 0
-  cloudProjectId: 1528f7ab-b878-48c8-9574-af101fee5ba0
+  cloudProjectId: 99f88a3a-8d7b-4030-8137-0db968aef14a
   framebufferDepthMemorylessMode: 0
   qualitySettingsNames: []
   projectName: UnderCookedVR
-  organizationId: bleach033
+  organizationId: rosaf1226
   cloudEnabled: 0
   legacyClampBlendShapeWeights: 0
   hmiLoadingImage: {fileID: 0}

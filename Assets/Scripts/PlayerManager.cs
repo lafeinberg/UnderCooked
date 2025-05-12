@@ -4,7 +4,7 @@ using UnityEngine;
 using XRMultiplayer;
 using Unity.Netcode;
 using Unity.XR.CoreUtils;
-
+using TMPro;
 
 
 // add penalties??
@@ -38,7 +38,10 @@ public class PlayerManager : NetworkBehaviour
     public List<bool> levelWon = new List<bool>();
     public List<float> levelTimes = new List<float>();
 
-    private bool isInKitchen = false;
+    public TextMeshProUGUI hostTimerUI;
+    public TextMeshProUGUI clientTimerUI;
+    private TextMeshProUGUI localTimerUI;
+    private bool localTimerRunning = false;
 
 
     public DrawLineToObj pathVisualizer;
@@ -51,8 +54,14 @@ public class PlayerManager : NetworkBehaviour
         //{
         //    MockWayfind();
         //}
-        if (!IsOwner)
+        Debug.Log($"[Timer] IsOwner: {IsOwner}, localTimerRunning: {localTimerRunning}, UI null: {localTimerUI == null}");
+        if (!IsOwner || !localTimerRunning || localTimerUI == null)
             return;
+
+        float matchTime = GameManager.Instance.syncedGameTime.Value;
+        int minutes = Mathf.FloorToInt(matchTime / 60);
+        int seconds = Mathf.FloorToInt(matchTime % 60);
+        localTimerUI.text = $"{minutes}:{seconds:00}";
 
         // This is a logic executed once when a new instruction shows up. Used to initialize or set up the scene for the task
         Debug.Log($"[PlayerManager] Update called. isExecutingInstruction={isExecutingInstruction}");
@@ -64,10 +73,10 @@ public class PlayerManager : NetworkBehaviour
 
         switch (currentInstruction.type)
         {
-            
-            case InstructionType.WayFind:              
+
+            case InstructionType.WayFind:
                 StartCoroutine(HandleWayfindingInstruction(currentInstruction));
-                
+
                 break;
                 // Other instruction types will be handled externally (e.g., Grab/Salt via object interaction)
         }
@@ -78,6 +87,18 @@ public class PlayerManager : NetworkBehaviour
     public override void OnNetworkSpawn()
     {
         base.OnNetworkSpawn();
+
+        string timerTag = IsHost ? "HostTimerUI" : "ClientTimerUI";
+        GameObject timerObj = GameObject.FindGameObjectWithTag(timerTag);
+        if (timerObj != null)
+        {
+            localTimerUI = timerObj.GetComponentInChildren<TextMeshProUGUI>();
+            Debug.Log($"TIMER FOUND FOR {timerTag}");
+        }
+        else
+        {
+            Debug.Log($"could not find timer for {timerTag}");
+        }
 
         if (!IsOwner)
             return;
@@ -117,26 +138,8 @@ public class PlayerManager : NetworkBehaviour
         {
             Debug.LogError("Couldn't find DrawLineToObjClient!");
         }
-        /*
-        instructionToolbar.transform.SetParent(_cameraTransform, false);
-        instructionToolbar.transform.localPosition = toolbarOffset;
-        instructionToolbar.transform.localRotation = Quaternion.identity;
-        */
     }
 
-    void LateUpdate()
-    {
-        if (IsOwner && instructionToolbar != null && _cameraTransform != null)
-        {
-            //Vector3 worldPos = _cameraTransform.TransformPoint(toolbarOffset);
-            /*
-            instructionToolbar.transform.position = worldPos;
-
-            instructionToolbar.transform.rotation =
-                Quaternion.LookRotation(instructionToolbar.transform.position - _cameraTransform.position);
-            */
-        }
-    }
 
     [ClientRpc]
     public void TeleportClientRpc(Vector3 position, Quaternion rotation, ClientRpcParams clientRpcParams = default)
@@ -171,7 +174,6 @@ public class PlayerManager : NetworkBehaviour
                 //}
 
                 Debug.Log($"[PlayerManager OwnerId: {OwnerClientId}] XROrigin teleported. New position: {_XrOrigin.transform.position}");
-                isInKitchen = true;
             }
             else
             {
@@ -189,6 +191,7 @@ public class PlayerManager : NetworkBehaviour
     public void StartLevelClientRpc(int levelNumber, float overlayDuration)
     {
         StartCoroutine(ActivateToolbarAfterDelay(levelNumber, overlayDuration));
+        StartLocalTimer();
     }
 
     private IEnumerator ActivateToolbarAfterDelay(int levelNumber, float delay)
@@ -199,14 +202,14 @@ public class PlayerManager : NetworkBehaviour
     }
 
 
-    // DUMMY METHOD FOR TESTING 
-    void OnCollisionEnter(Collision collision)
+    private void StartLocalTimer()
     {
-        if (collision.gameObject.tag == "Ingredient")
-        {
-            Debug.Log("Player touched ingredient!");
-            PlayerStepCompleted();
-        }
+        localTimerRunning = true;
+    }
+
+    private void StopLocalTimer()
+    {
+        localTimerRunning = false;
     }
 
 
@@ -242,6 +245,7 @@ public class PlayerManager : NetworkBehaviour
     {
         int currentLevel = GameManager.Instance.GetCurrentLevel();
         levelComplete[currentLevel] = true;
+        StopLocalTimer();
         GameManager.Instance.RegisterPlayerLevelComplete(this);
     }
 
