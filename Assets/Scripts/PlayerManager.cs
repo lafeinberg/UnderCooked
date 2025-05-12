@@ -55,7 +55,7 @@ public class PlayerManager : NetworkBehaviour
             return;
 
         // This is a logic executed once when a new instruction shows up. Used to initialize or set up the scene for the task
-        //Debug.Log($"[PlayerManager] Update called. isExecutingInstruction={isExecutingInstruction}");
+        Debug.Log($"[PlayerManager] Update called. isExecutingInstruction={isExecutingInstruction}");
 
         if (isExecutingInstruction) return;
 
@@ -64,11 +64,10 @@ public class PlayerManager : NetworkBehaviour
 
         switch (currentInstruction.type)
         {
-            case InstructionType.WayFind:
-                if (isInKitchen)
-                {
-                    StartCoroutine(HandleWayfindingInstruction(currentInstruction));
-                }
+            
+            case InstructionType.WayFind:              
+                StartCoroutine(HandleWayfindingInstruction(currentInstruction));
+                
                 break;
                 // Other instruction types will be handled externally (e.g., Grab/Salt via object interaction)
         }
@@ -103,6 +102,20 @@ public class PlayerManager : NetworkBehaviour
         else
         {
             Debug.Log($"TOOLBAR FOUND IN SCENE FOR NetworkObject.OwnerClientId: {NetworkObject.OwnerClientId}");
+        }
+
+        pathVisualizer = FindObjectOfType<DrawLineToObj>();
+        //Debug.Log($"[PlayerManager] Automatically found pathVisualizer: {pathVisualizer?.gameObject.name}");
+        if (pathVisualizer == null)
+        {
+            Debug.LogError("Couldn't find DrawLineToObj!");
+        }
+
+        pathVisualizerClient = FindObjectOfType<DrawLineToObjClient>();
+        //Debug.Log($"[PlayerManager] Automatically found pathVisualizerClient: {pathVisualizer?.gameObject.name}");
+        if (pathVisualizerClient == null)
+        {
+            Debug.LogError("Couldn't find DrawLineToObjClient!");
         }
         /*
         instructionToolbar.transform.SetParent(_cameraTransform, false);
@@ -143,19 +156,19 @@ public class PlayerManager : NetworkBehaviour
                     Debug.Log("Rotated 180");
                 }
 
-                pathVisualizer = FindObjectOfType<DrawLineToObj>();
-                Debug.Log($"[PlayerManager] Automatically found pathVisualizer: {pathVisualizer?.gameObject.name} for {NetworkObject.OwnerClientId}");
-                if (pathVisualizer == null)
-                {
-                    Debug.LogError("Couldn't find DrawLineToObj!");
-                }
+                //pathVisualizer = FindObjectOfType<DrawLineToObj>();
+                //Debug.Log($"[PlayerManager] Automatically found pathVisualizer: {pathVisualizer?.gameObject.name} for {NetworkObject.OwnerClientId}");
+                //if (pathVisualizer == null)
+                //{
+                //    Debug.LogError("Couldn't find DrawLineToObj!");
+                //}
 
-                pathVisualizerClient = FindObjectOfType<DrawLineToObjClient>();
-                Debug.Log($"[PlayerManager] Automatically found pathVisualizerClient: {pathVisualizer?.gameObject.name} for {NetworkObject.OwnerClientId}");
-                if (pathVisualizerClient == null)
-                {
-                    Debug.LogError("Couldn't find DrawLineToObjClient!");
-                }
+                //pathVisualizerClient = FindObjectOfType<DrawLineToObjClient>();
+                //Debug.Log($"[PlayerManager] Automatically found pathVisualizerClient: {pathVisualizer?.gameObject.name} for {NetworkObject.OwnerClientId}");
+                //if (pathVisualizerClient == null)
+                //{
+                //    Debug.LogError("Couldn't find DrawLineToObjClient!");
+                //}
 
                 Debug.Log($"[PlayerManager OwnerId: {OwnerClientId}] XROrigin teleported. New position: {_XrOrigin.transform.position}");
                 isInKitchen = true;
@@ -204,6 +217,7 @@ public class PlayerManager : NetworkBehaviour
         Debug.Log($"Checking instruction type, recieved: {type}");
         if (type == GameManager.Instance.GetCurrentInstruction(currentInstructionIndex).type)
         {
+            isExecutingInstruction = false;
             PlayerStepCompleted();
         }
 
