@@ -253,6 +253,7 @@ public class PlayerManager : NetworkBehaviour
             "Fridge" => 0,
             "Stove" => 1,
             "Table" => 2,
+            "Assembly" => 3,
             _ => -1
         };
 

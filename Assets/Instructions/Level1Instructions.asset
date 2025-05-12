@@ -16,54 +16,51 @@ MonoBehaviour:
   - description: Walk to the ingredients table
     type: 6
     targetObject: Table
-  - description: 'Grab top and bottom burger buns  '
+  - description: 'Grab bottom burger buns  '
     type: 1
-    targetObject: 
+    targetObject: bun_bottom
   - description: Walk to the assembly counter
     type: 6
-    targetObject: Table
+    targetObject: Assembly
   - description: 'Drop both burger buns onto the plate '
     type: 0
-    targetObject: 
-  - description: Walk to the ingredients table
+    targetObject: bun_bottom
+  - description: Walk to the fridge
     type: 6
-    targetObject: Table
-  - description: Grab a hamburger patty
+    targetObject: Fridge
+  - description: Grab a cheese
     type: 1
-    targetObject: 
-  - description: Walk to the grill
-    type: 6
-    targetObject: Stove
-  - description: Drop the hamburger patty on the grill
-    type: 0
-    targetObject: 
-  - description: Grab the spatula and wait 15 seconds
-    type: 1
-    targetObject: 
-  - description: Flip the hamburger patty and wait 15 seconds
+    targetObject: uncut_cheese
+  - description: Cut it
+    type: 2
+    targetObject: cheese
+  - description: cook the steak
     type: 3
+    targetObject: 
+  - description: add salt to the steak
+    type: 4
+    targetObject: 
+  - description: assemble items
+    type: 5
     targetObject: 
   - description: 'Lift the patty onto the spatula '
     type: 1
     targetObject: 
   - description: Walk to the assembly counter
     type: 6
-    targetObject: Table
+    targetObject: Assembly
   - description: Drop the patty onto the bottom burger bun
     type: 0
     targetObject: 
-  - description: Drop the spatula at the grill
-    type: 0
-    targetObject: 
   - description: Walk to the ingredients table
-    type: 5
+    type: 6
     targetObject: Table
   - description: Grab a cheese slice
     type: 1
     targetObject: 
   - description: Walk to the assembly counter
     type: 6
-    targetObject: Table
+    targetObject: Assembly
   - description: Drop the cheese on top of the patty
     type: 0
     targetObject: 

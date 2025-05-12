@@ -35,7 +35,7 @@ public class SaltReceiver : MonoBehaviour
         {
             Debug.Log($"[SaltReceiver] Finished salting target: {name}");
 
-            PlayerManager closestPlayer = GameManager.Instance.FindPlayerByObject();
+            PlayerManager closestPlayer = GameManager.Instance.FindLocalPlayer();
             closestPlayer.PlayerNotifyActionCompleted(instructionType);
         }
 

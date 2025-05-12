@@ -55,7 +55,7 @@ public class SliceIngredients : NetworkBehaviour
     {
         if (!IsHost) return;
 
-        PlayerManager closestPlayer = GameManager.Instance.FindPlayerByObject();
+        PlayerManager closestPlayer = GameManager.Instance.FindLocalPlayer();
         string expected = closestPlayer.GetCurrentTargetObjectName();
 
         if (gameObject.name.ToLower().Contains(expected.ToLower()))

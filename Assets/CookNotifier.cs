@@ -8,7 +8,7 @@ public class CookNotifier : MonoBehaviour
     public void OnCookButtonPressed()
     {
         Debug.Log("Cook Item Notified.");
-        PlayerManager closestPlayer = GameManager.Instance.FindPlayerByObject();
+        PlayerManager closestPlayer = GameManager.Instance.FindLocalPlayer();
         closestPlayer.PlayerNotifyActionCompleted(InstructionType.CookItem);
     }
 }

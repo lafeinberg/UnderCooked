@@ -77,7 +77,7 @@ public class IngredientStacker : MonoBehaviour
         }
 
         //Notify Manager
-        PlayerManager closestPlayer = GameManager.Instance.FindPlayerByObject();
+        PlayerManager closestPlayer = GameManager.Instance.FindLocalPlayer();
         closestPlayer.PlayerNotifyActionCompleted(InstructionType.AssembleBurger);
         
     }

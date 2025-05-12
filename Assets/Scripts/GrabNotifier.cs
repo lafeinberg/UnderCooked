@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.XR.Interaction.Toolkit.Interactables;
 using UnityEngine.XR.Interaction.Toolkit;
+using Unity.Netcode;
 
 public class GrabNotifier : MonoBehaviour
 {
@@ -34,8 +35,9 @@ public class GrabNotifier : MonoBehaviour
     {
         Debug.Log($"[GrabbableNotifier] Object {gameObject.name} grabbed!");
 
-        PlayerManager closestPlayer = GameManager.Instance.FindPlayerByObject();
+        PlayerManager closestPlayer = GameManager.Instance.FindLocalPlayer();
 
+        Debug.Log($"[FindPlayerByObject] Closest player result: {(closestPlayer != null ? closestPlayer.GetComponent<NetworkObject>().NetworkObjectId : "null")}");
         if (closestPlayer == null)
             return;
 
@@ -55,7 +57,7 @@ public class GrabNotifier : MonoBehaviour
     {
         Debug.Log($"[GrabbableNotifier] Object {gameObject.name} dropped!");
         
-        PlayerManager closestPlayer = GameManager.Instance.FindPlayerByObject();
+        PlayerManager closestPlayer = GameManager.Instance.FindLocalPlayer();
 
         if (closestPlayer == null)
             return;

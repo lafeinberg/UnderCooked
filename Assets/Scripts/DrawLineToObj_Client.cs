@@ -104,7 +104,7 @@ public class DrawLineToObjClient : NetworkBehaviour
 
     public void SetTarget(int i)
     {
-        if (i < 0 || i > 2) return;
+        if (i < 0 || i > 3) return;
         current = i;
         Debug.Log($"[DrawLineToObj] SetTarget called with index {i}");
     }

@@ -438,4 +438,19 @@ public class GameManager : NetworkBehaviour
         return currentLevel;
     }
 
+    public PlayerManager FindLocalPlayer()
+    {
+        foreach (var player in players)
+        {
+            if (player.IsOwner)
+            {
+                Debug.Log($"Local player found: {player.OwnerClientId}, name: {player.name}");
+                return player;
+            }
+        }
+
+        Debug.LogWarning("Local player not found!");
+        return null;
+    }
+
 }
