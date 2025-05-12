@@ -1,10 +1,10 @@
 using UnityEngine;
-using XRMultiplayer;
+using Unity.Netcode;
 
 [RequireComponent(typeof(Collider))]
-public class SliceIngredients : MonoBehaviour
+public class SliceIngredients : NetworkBehaviour
 {
-    [SerializeField] private GameObject slicedTomatoPrefab;
+    [SerializeField] private NetworkObject slicedTomatoPrefab;
     [SerializeField] private int hitsToSlice = 3;
     [SerializeField] private ParticleSystem cutParticlesPrefab;
 
@@ -23,7 +23,13 @@ public class SliceIngredients : MonoBehaviour
             SpawnCutParticles(collision.GetContact(0));
 
         if (hitCount >= hitsToSlice)
-            SliceTomato();
+        {
+            // Clients must ask the server to perform the slice
+            if (IsOwner || IsClient) // Ensures only one request
+            {
+                RequestSliceServerRpc();
+            }
+        }
     }
 
     private void OnCollisionExit(Collision collision)
@@ -44,15 +50,17 @@ public class SliceIngredients : MonoBehaviour
         Destroy(ps.gameObject, ps.main.duration + ps.main.startLifetime.constantMax);
     }
 
-    private void SliceTomato()
+    [ServerRpc(RequireOwnership = false)]
+    private void RequestSliceServerRpc(ServerRpcParams rpcParams = default)
     {
+        if (!IsHost) return;
+
         PlayerManager closestPlayer = GameManager.Instance.FindPlayerByObject();
         string expected = closestPlayer.GetCurrentTargetObjectName();
 
         if (gameObject.name.ToLower().Contains(expected.ToLower()))
         {
             Debug.Log($"[SliceIngredients] Successfully sliced correct ingredient: {gameObject.name}");
-           
             closestPlayer.PlayerNotifyActionCompleted(InstructionType.ChopItem);
         }
         else
@@ -60,12 +68,15 @@ public class SliceIngredients : MonoBehaviour
             Debug.Log($"[SliceIngredients] Sliced object: {gameObject.name}, but expected: {expected}. Ignored.");
         }
 
-        Instantiate(
+        var sliced = Instantiate(
             slicedTomatoPrefab,
             transform.position,
             transform.rotation,
             transform.parent
         );
+
+        sliced.Spawn(); // Makes it appear on all clients
+
         Destroy(gameObject);
     }
 }

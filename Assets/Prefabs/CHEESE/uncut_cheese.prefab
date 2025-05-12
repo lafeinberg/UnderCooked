@@ -380,7 +380,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 56c392055d1434056b7175f6a8467420, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  slicedTomatoPrefab: {fileID: 6469546169272379110, guid: e98dd4818045e4d5ca892664e2596ec7, type: 3}
+  slicedTomatoPrefab: {fileID: 3490019380443368674, guid: e98dd4818045e4d5ca892664e2596ec7, type: 3}
   hitsToSlice: 4
   cutParticlesPrefab: {fileID: 3666516422518831120, guid: f9632fcb39da646278f667ff11c2e529, type: 3}
 --- !u!65 &2813820526692008005

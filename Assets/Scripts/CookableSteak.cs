@@ -31,8 +31,12 @@ public class CookableSteak : MonoBehaviour
     private InstructionType cookInstructionType = InstructionType.CookItem;
     private InstructionType dropInstructionType = InstructionType.DropItem;
 
+    /* UI to implement later
+    
     public GameObject cookTimerUI;
     public TextMeshProUGUI cookTimerText;
+
+    */ 
     private bool isInPan;
     private bool isCooking;
     private ParticleSystem activeParticles;
@@ -135,14 +139,14 @@ public class CookableSteak : MonoBehaviour
     {
         if (!isCooking)
         {
-            cookTimerUI.SetActive(false);
+            // cookTimerUI.SetActive(false);
             cookTimer = 0f;
         }
         else
         {
-            cookTimerUI.SetActive(true);
+            // cookTimerUI.SetActive(true);
             cookTimer += Time.deltaTime;
-            cookTimerText.text = $"{cookTimer}s";
+            // cookTimerText.text = $"{cookTimer}s";
             float t = Mathf.Clamp01(cookTimer / burnTimeThreshold);
             matInstance.color = colorOverTime.Evaluate(t);
         }
