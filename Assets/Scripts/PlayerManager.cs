@@ -6,26 +6,15 @@ using Unity.Netcode;
 using Unity.XR.CoreUtils;
 using TMPro;
 
-
-// add penalties??
-public class LevelStats
-{
-    public int levelNumber;
-    public float finalTime;
-    public bool didWin;
-}
-
 public class PlayerManager : NetworkBehaviour
 {
-    public string playerId;
-    private Dictionary<int, LevelStats> levelStats = new();
-    public static PlayerManager LocalPlayer;
-
+    [Header("Player Rig Components")]
     public Transform avatarRoot;
     public Transform xrRigHead;
     private XROrigin _XrOrigin;
     private Transform _cameraTransform;
 
+    [Header("Instruction Controllers")]
     public int currentInstructionIndex = 0;
     private Instruction currentInstruction;
 
@@ -34,37 +23,32 @@ public class PlayerManager : NetworkBehaviour
     public GameObject levelStartPanel;
     public GameObject levelCompletePanel;
 
-    public List<bool> levelComplete = new List<bool>();
-    public List<bool> levelWon = new List<bool>();
-    public List<float> levelTimes = new List<float>();
+    [Header("Player Stats")]
+    public bool gameComplete;
+    public bool gameWon;
+    public float gameTime;
 
+    [Header("Timer UI")]
     public TextMeshProUGUI hostTimerUI;
     public TextMeshProUGUI clientTimerUI;
     private TextMeshProUGUI localTimerUI;
     private bool localTimerRunning = false;
 
-
+    [Header("Wayfinding")]
     public DrawLineToObj pathVisualizer;
     public DrawLineToObjClient pathVisualizerClient;
     private bool isExecutingInstruction = false;
 
     void Update()
     {
-        //if (GameManager.Instance.GetCurrentInstruction(currentInstructionIndex).type == InstructionType.WayFind)
-        //{
-        //    MockWayfind();
-        //}
-        Debug.Log($"[Timer] IsOwner: {IsOwner}, localTimerRunning: {localTimerRunning}, UI null: {localTimerUI == null}");
         if (!IsOwner || !localTimerRunning || localTimerUI == null)
             return;
 
+        // update local player timer UI
         float matchTime = GameManager.Instance.syncedGameTime.Value;
         int minutes = Mathf.FloorToInt(matchTime / 60);
         int seconds = Mathf.FloorToInt(matchTime % 60);
         localTimerUI.text = $"{minutes}:{seconds:00}";
-
-        // This is a logic executed once when a new instruction shows up. Used to initialize or set up the scene for the task
-        Debug.Log($"[PlayerManager] Update called. isExecutingInstruction={isExecutingInstruction}");
 
         if (isExecutingInstruction) return;
 
@@ -78,7 +62,7 @@ public class PlayerManager : NetworkBehaviour
                 StartCoroutine(HandleWayfindingInstruction(currentInstruction));
 
                 break;
-                // Other instruction types will be handled externally (e.g., Grab/Salt via object interaction)
+                // other instruction types will be handled externally (e.g., Grab/Salt via object interaction)
         }
 
         isExecutingInstruction = true;
@@ -103,16 +87,15 @@ public class PlayerManager : NetworkBehaviour
         if (!IsOwner)
             return;
 
-        Debug.Log($"[PlayerManager.OnNetworkSpawn IsServer:{IsServer}, IsOwner:{IsOwner}, IsClient:{IsClient}] Object: {gameObject.name}, InstanceID: {GetInstanceID()}, NetworkObject.OwnerClientId: {NetworkObject.OwnerClientId}, NetworkManager.LocalClientId: {NetworkManager.Singleton.LocalClientId}");
-
-        Debug.Log($"[PlayerManager.OnNetworkSpawn CLIENT-SIDE IsOwner EXECUTION] For my PlayerManager InstanceID: {GetInstanceID()}, My NetworkObject.OwnerClientId: {NetworkObject.OwnerClientId}, My LocalClientId is: {NetworkManager.Singleton.LocalClientId}.");
-        LocalPlayer = this;
+        // get xrorigin object
         _XrOrigin = FindObjectOfType<XROrigin>();
         _cameraTransform = _XrOrigin.Camera.transform;
         if (_XrOrigin == null)
         {
-            Debug.LogError("[Player Manager] No XROrigin found in scene!");
+            Debug.LogError("No XROrigin found in scene!");
         }
+
+        // get toolbar
         instructionToolbar = _XrOrigin.Camera.GetComponentInChildren<InstructionToolbar>(true);
         if (instructionToolbar == null)
         {
@@ -123,6 +106,7 @@ public class PlayerManager : NetworkBehaviour
             Debug.Log($"TOOLBAR FOUND IN SCENE FOR NetworkObject.OwnerClientId: {NetworkObject.OwnerClientId}");
         }
 
+        // get progress bar
         progressBar = _XrOrigin.Camera.GetComponentInChildren<ProgressBar>(true);
         if (progressBar == null)
         {
@@ -133,15 +117,14 @@ public class PlayerManager : NetworkBehaviour
             Debug.Log($"Progress BAR FOUND IN SCENE FOR NetworkObject.OwnerClientId: {NetworkObject.OwnerClientId}");
         }
 
+        // wayfinding path visualizers
         pathVisualizer = FindObjectOfType<DrawLineToObj>();
-        //Debug.Log($"[PlayerManager] Automatically found pathVisualizer: {pathVisualizer?.gameObject.name}");
         if (pathVisualizer == null)
         {
             Debug.LogError("Couldn't find DrawLineToObj!");
         }
 
         pathVisualizerClient = FindObjectOfType<DrawLineToObjClient>();
-        //Debug.Log($"[PlayerManager] Automatically found pathVisualizerClient: {pathVisualizer?.gameObject.name}");
         if (pathVisualizerClient == null)
         {
             Debug.LogError("Couldn't find DrawLineToObjClient!");
@@ -149,6 +132,7 @@ public class PlayerManager : NetworkBehaviour
     }
 
 
+    /* Teleports client to start position in game */
     [ClientRpc]
     public void TeleportClientRpc(Vector3 position, Quaternion rotation, ClientRpcParams clientRpcParams = default)
     {
@@ -167,20 +151,6 @@ public class PlayerManager : NetworkBehaviour
                     Debug.Log("Rotated 180");
                 }
 
-                //pathVisualizer = FindObjectOfType<DrawLineToObj>();
-                //Debug.Log($"[PlayerManager] Automatically found pathVisualizer: {pathVisualizer?.gameObject.name} for {NetworkObject.OwnerClientId}");
-                //if (pathVisualizer == null)
-                //{
-                //    Debug.LogError("Couldn't find DrawLineToObj!");
-                //}
-
-                //pathVisualizerClient = FindObjectOfType<DrawLineToObjClient>();
-                //Debug.Log($"[PlayerManager] Automatically found pathVisualizerClient: {pathVisualizer?.gameObject.name} for {NetworkObject.OwnerClientId}");
-                //if (pathVisualizerClient == null)
-                //{
-                //    Debug.LogError("Couldn't find DrawLineToObjClient!");
-                //}
-
                 Debug.Log($"[PlayerManager OwnerId: {OwnerClientId}] XROrigin teleported. New position: {_XrOrigin.transform.position}");
             }
             else
@@ -195,6 +165,7 @@ public class PlayerManager : NetworkBehaviour
         }
     }
 
+    /* Start level for every player */
     [ClientRpc]
     public void StartLevelClientRpc(int levelNumber, float overlayDuration)
     {
@@ -202,6 +173,7 @@ public class PlayerManager : NetworkBehaviour
         StartLocalTimer();
     }
 
+    /* Activate tooltip with instruction for every player */
     private IEnumerator ActivateToolbarAfterDelay(int levelNumber, float delay)
     {
         yield return new WaitForSeconds(delay);
@@ -211,7 +183,6 @@ public class PlayerManager : NetworkBehaviour
         progressBar.SetProgress((float)currentInstructionIndex / instructionCount);
     }
 
-
     private void StartLocalTimer()
     {
         localTimerRunning = true;
@@ -219,14 +190,15 @@ public class PlayerManager : NetworkBehaviour
 
     private void StopLocalTimer()
     {
+        gameTime = GameManager.Instance.syncedGameTime.Value;
         localTimerRunning = false;
     }
 
 
-    // CALL THIS FOR STEP MANAGEMENT
+    /* Player */
     public void PlayerNotifyActionCompleted(InstructionType type)
     {
-        Debug.Log("player action completed");
+        Debug.Log("Player action completed");
         Debug.Log($"Checking instruction type, recieved: {type}");
         if (type == GameManager.Instance.GetCurrentInstruction(currentInstructionIndex).type)
         {
@@ -244,8 +216,8 @@ public class PlayerManager : NetworkBehaviour
 
         if (currentInstructionIndex < instructionCount)
         {
+            SubmitProgressToServerRpc();
             currentInstructionIndex++;
-            //GameManager.Instance.UpdatePlayerProgress(this);
             instructionToolbar.ShowInstruction(GameManager.Instance.GetCurrentInstruction(currentInstructionIndex));
         }
 
@@ -256,10 +228,18 @@ public class PlayerManager : NetworkBehaviour
     public void RegisterPlayerLevelComplete()
     {
         int currentLevel = GameManager.Instance.GetCurrentLevel();
-        levelComplete[currentLevel] = true;
+        gameComplete = true;
         StopLocalTimer();
         GameManager.Instance.RegisterPlayerLevelComplete(this);
     }
+
+    [ServerRpc]
+    void SubmitProgressToServerRpc()
+    {
+        float progress = (float)currentInstructionIndex / GameManager.Instance.GetInstructionCount() * 100;
+        GameManager.Instance.UpdatePlayerProgressServerRpc(OwnerClientId, progress);
+    }
+
 
 
     private IEnumerator HandleWayfindingInstruction(Instruction instruction)
