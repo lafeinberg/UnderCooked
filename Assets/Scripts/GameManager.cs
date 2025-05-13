@@ -1,4 +1,4 @@
-// ================================
+Ok does This work // ================================
 // 🎮 Multiplayer Plate Placement Game (Step 1: Ready System)
 // ================================
 using System.Collections.Generic;
@@ -46,6 +46,7 @@ public class GameManager : NetworkBehaviour
     //private NetworkVariable<int> nextLevelReadyCount = new NetworkVariable<int>(0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
     public NetworkVariable<float> syncedGameTime = new NetworkVariable<float>(0f, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
 
+    private Dictionary<ulong, float> playerProgress = new();  // clientId -> progress
     public List<PlayerManager> players = new List<PlayerManager>();
     private bool localReady = false;
     private bool uiShown = false;
@@ -60,7 +61,9 @@ public class GameManager : NetworkBehaviour
     public int currentLevel = 1;
     private bool matchRunning = false;
     private bool winnerDetected = false;
-    public float proximityThreshold = 2f;
+
+    public ProgressBar player1ProgressBar;
+    public ProgressBar player1ProgressBar;
 
     public Transform[] spawnPoints;
     public static GameManager Instance;
@@ -255,19 +258,19 @@ public class GameManager : NetworkBehaviour
 
     public void RegisterPlayerLevelComplete(PlayerManager player)
     {
-        player.levelComplete[currentLevel] = true;
-        player.levelTimes[currentLevel] = timer;
+        player.gameComplete = true;
+        player.gameTime = timer;
 
         if (!winnerDetected)
         {
             winnerDetected = true;
             winner.Value = (int)player.OwnerClientId;
-            player.levelWon[currentLevel] = true;
+            player.gameWon = true;
         }
 
         ShowPlayerResultClientRpc(player.OwnerClientId, (ulong)winner.Value);
 
-        if (players[0].levelComplete[currentLevel] && players[1].levelComplete[currentLevel])
+        if (players[0].gameComplete && players[1].gameComplete)
         {
             EndLevelClientRpc();
         }
@@ -327,12 +330,12 @@ public class GameManager : NetworkBehaviour
         //nextLevelUI.SetActive(true);
 
         levelEndIntroText.text = $"Game {currentLevel} Complete!";
-        int player1EndMinutes = Mathf.FloorToInt(players[0].levelTimes[currentLevel] / 60);
-        int player1EndSeconds = Mathf.FloorToInt(players[0].levelTimes[currentLevel] % 60);
+        int player1EndMinutes = Mathf.FloorToInt(players[0].gameTime / 60);
+        int player1EndSeconds = Mathf.FloorToInt(players[0].gameTime % 60);
         string player1Time = string.Format("{0}:{1:00}", player1EndMinutes, player1EndSeconds);
 
-        int player2EndMinutes = Mathf.FloorToInt(players[1].levelTimes[currentLevel] / 60);
-        int player2EndSeconds = Mathf.FloorToInt(players[1].levelTimes[currentLevel] % 60);
+        int player2EndMinutes = Mathf.FloorToInt(players[1].gameTime / 60);
+        int player2EndSeconds = Mathf.FloorToInt(players[1].gameTime % 60);
         string player2Time = string.Format("{0}:{1:00}", player2EndMinutes, player2EndSeconds);
         levelEndStats.text = $"Player 1 Time: {player1Time}\nPlayer 2 Time: {player2Time}";
     }
@@ -380,19 +383,30 @@ public class GameManager : NetworkBehaviour
         startLevelPanel.SetActive(false);
     }
 
-    // only for the progress Ui on the fridge
-    /*
-    public void UpdatePlayerProgress(PlayerManager player)
+    [ServerRpc]
+    public void UpdatePlayerProgressServerRpc(ulong clientId, float progress)
     {
-        Debug.Log($"player {player.OwnerClientId} completed instruction {player.currentInstructionIndex}");
+        Debug.Log($"player {clientId} completed instruction");
 
-        if (player.currentInstructionIndex >= currentLevelInstructions.instructions.Count)
+        UpdateLeaderboardClientRpc(clientId, progress);
+
+    }
+
+    [ClientRpc]
+    void UpdateLeaderboardClientRpc(ulong clientId, float progress)
+    {
+        Debug.Log("updating leaderboard");
+
+        if (clientId == 0)
         {
-            Debug.Log($"Player {player.OwnerClientId} finished all instructions!");
+            player1ProgressBar.SetProgress(progress);
+        }
+        else
+        {
+            player2ProgressBar.SetProgress(progress);
         }
 
     }
-    */
 
     public Instruction GetCurrentInstruction(int index)
     {
@@ -427,3 +441,4 @@ public class GameManager : NetworkBehaviour
     }
 
 }
+

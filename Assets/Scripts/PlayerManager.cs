@@ -50,6 +50,11 @@ public class PlayerManager : NetworkBehaviour
         int seconds = Mathf.FloorToInt(matchTime % 60);
         localTimerUI.text = $"{minutes}:{seconds:00}";
 
+        if (matchTime > 5f)
+        {
+            PlayerStepCompleted();
+        }
+
         if (isExecutingInstruction) return;
 
         currentInstruction = GameManager.Instance.GetCurrentInstruction(currentInstructionIndex);
@@ -213,6 +218,7 @@ public class PlayerManager : NetworkBehaviour
         Debug.Log("current step completed");
         int instructionCount = GameManager.Instance.GetInstructionCount();
         progressBar.SetProgress((float)currentInstructionIndex / instructionCount);
+        RegisterPlayerLevelComplete();
 
         if (currentInstructionIndex < instructionCount)
         {
@@ -220,8 +226,6 @@ public class PlayerManager : NetworkBehaviour
             currentInstructionIndex++;
             instructionToolbar.ShowInstruction(GameManager.Instance.GetCurrentInstruction(currentInstructionIndex));
         }
-
-        //RegisterPlayerLevelComplete();
 
     }
 

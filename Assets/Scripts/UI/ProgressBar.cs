@@ -1,6 +1,5 @@
 using System.Collections;
 using UnityEngine;
-using UnityEngine.Events;
 using UnityEngine.UI;
 using TMPro;
 
@@ -11,28 +10,23 @@ public class ProgressBar : MonoBehaviour
 
     [SerializeField]
     private TextMeshProUGUI ProgressPercentText;
+
     [SerializeField]
     private float animationSpeed = 1f;
-    private Coroutine AnimationCoroutine;
 
+    private Coroutine animationCoroutine;
 
-    /*
-    * Set progress bar fill to represent recipe progress by giving float >0 and <1
-    */
     public void SetProgress(float targetProgress)
     {
         Debug.Log($"SETTING PROGRESS TO {targetProgress * 100}%");
+
         if (!gameObject.activeSelf)
             gameObject.SetActive(true);
 
-        if (targetProgress != ProgressBarImage.fillAmount)
-        {
-            if (AnimationCoroutine != null)
-            {
-                StopCoroutine(AnimationCoroutine);
-            }
-            AnimationCoroutine = StartCoroutine(AnimateProgress(targetProgress));
-        }
+        if (animationCoroutine != null)
+            StopCoroutine(animationCoroutine);
+
+        animationCoroutine = StartCoroutine(AnimateProgress(targetProgress));
     }
 
     private IEnumerator AnimateProgress(float targetProgress)
@@ -54,10 +48,5 @@ public class ProgressBar : MonoBehaviour
 
         if (targetProgress >= 1f)
             gameObject.SetActive(false);
-    }
-
-    private void EndProgress()
-    {
-        gameObject.SetActive(false);
     }
 }
