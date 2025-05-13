@@ -43,6 +43,9 @@ TagManager:
   - Button
   - ClientTimerUI
   - HostTimerUI
+  - Tool
+  - ConfettiHost
+  - ConfettiClient
   layers:
   - Default
   - TransparentFX

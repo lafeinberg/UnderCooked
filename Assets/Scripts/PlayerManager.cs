@@ -5,9 +5,13 @@ using XRMultiplayer;
 using Unity.Netcode;
 using Unity.XR.CoreUtils;
 using TMPro;
+using System;
 
 
-// add penalties??
+// add penalties?
+
+
+
 public class LevelStats
 {
     public int levelNumber;
@@ -17,6 +21,10 @@ public class LevelStats
 
 public class PlayerManager : NetworkBehaviour
 {
+    [SerializeField]
+    private ParticleSystem confettiHost;
+    [SerializeField]
+    private ParticleSystem confettiClient;
     public string playerId;
     private Dictionary<int, LevelStats> levelStats = new();
     public static PlayerManager LocalPlayer;
@@ -49,6 +57,14 @@ public class PlayerManager : NetworkBehaviour
     public DrawLineToObj pathVisualizer;
     public DrawLineToObjClient pathVisualizerClient;
     private bool isExecutingInstruction = false;
+
+    void Awake()
+    {
+        confettiHost   = GameObject.FindWithTag("ConfettiHost")  
+                         ?.GetComponent<ParticleSystem>();
+        confettiClient = GameObject.FindWithTag("ConfettiClient")
+                         ?.GetComponent<ParticleSystem>();
+    }
 
     void Update()
     {
@@ -261,6 +277,22 @@ public class PlayerManager : NetworkBehaviour
         levelComplete[currentLevel] = true;
         StopLocalTimer();
         GameManager.Instance.RegisterPlayerLevelComplete(this);
+    }
+
+    public void WinGame()
+    {
+        // host instance → play host confetti
+        if (IsHost)
+        {
+            if (confettiHost != null)
+                confettiHost.Play();
+        }
+        // all other clients → play client confetti
+        else
+        {
+            if (confettiClient != null)
+                confettiClient.Play();
+        }
     }
 
 

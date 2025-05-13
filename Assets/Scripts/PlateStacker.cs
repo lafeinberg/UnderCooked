@@ -16,6 +16,7 @@ public class PlateStacker : MonoBehaviour
     private void Awake()
     {
         GetComponent<Collider>().isTrigger = false;
+        
     }
 
     private void OnCollisionEnter(Collision collision)
@@ -29,13 +30,15 @@ public class PlateStacker : MonoBehaviour
         CollectStackFromRoot(root, stack);
 
         Debug.Log($"Burger on plate with {stack.Count} ingredients.");
+        if (stack.Count >= 4) {
+            PlayerManager winningPlayer = GameManager.Instance.FindLocalPlayer();
+            winningPlayer.WinGame();
+        }
 
         if (IsValidBurger(stack))
         {
             Debug.Log("Interface for Game Manager: ✅ Valid burger submitted!");
-            //gameManager?.SubmitBurger(stack);
-            PlayerManager winningPlayer = GameManager.Instance.FindLocalPlayer();
-            winningPlayer.RegisterPlayerLevelComplete();
+            return;
 
         }
         else
