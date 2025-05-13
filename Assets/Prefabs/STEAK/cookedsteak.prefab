@@ -190,7 +190,7 @@ GameObject:
   - component: {fileID: 6358058278028026759}
   - component: {fileID: 2722863819568049257}
   m_Layer: 9
-  m_Name: steak
+  m_Name: cookedsteak
   m_TagString: Ingredient
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

@@ -56,8 +56,8 @@ MonoBehaviour:
     type: 0
     targetObject: rawsteak
   - description: hold the button to cook the steak
-    type: 3
-    targetObject: 
+    type: 1
+    targetObject: cookedsteak
   - description: Walk to the ingredients table
     type: 6
     targetObject: Table
