@@ -3,7 +3,11 @@ guid: 56c392055d1434056b7175f6a8467420
 MonoImporter:
   externalObjects: {}
   serializedVersion: 2
-  defaultReferences: []
+  defaultReferences:
+  - slicedTomatoPrefab: {instanceID: 0}
+  - cutParticlesPrefab: {instanceID: 0}
+  - sliceAudioSource: {instanceID: 0}
+  - sliceSoundClip: {fileID: 8300000, guid: 879e9ed96f4fd494b83562596438da11, type: 3}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 
