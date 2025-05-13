@@ -13,69 +13,69 @@ MonoBehaviour:
   m_Name: Level1Instructions
   m_EditorClassIdentifier: 
   instructions:
-  - description: Walk to the ingredients table
+  - description: Walk to the Ingredients table
     type: 6
     targetObject: Table
-  - description: 'Grab bottom burger buns  '
+  - description: 'Grab the Burger Buns '
     type: 1
     targetObject: bun_bottom
-  - description: Walk to the assembly counter
+  - description: Walk to the Assembly Counter
     type: 6
     targetObject: Assembly
-  - description: 'Drop the bun onto the plate '
+  - description: 'Drop the Bottom Bun onto the Plate '
     type: 0
     targetObject: bun_bottom
-  - description: Walk to the fridge
+  - description: Walk to the Fridge
     type: 6
     targetObject: Fridge
-  - description: Grab a cheese
+  - description: Grab a Wedge of Cheese
     type: 1
     targetObject: uncut_cheese
-  - description: Cut the cheese
+  - description: Cut the Cheese
     type: 2
     targetObject: cheese
-  - description: Walk to the assembly counter
+  - description: Walk to the Assembly Counter
     type: 6
     targetObject: Assembly
-  - description: Put the cheese onto the buttom bun to assemble them
+  - description: Place Cheese on Bottom Bun
     type: 5
     targetObject: 
-  - description: Walk to the fridge
+  - description: Walk to the Fridge
     type: 6
     targetObject: Fridge
-  - description: Grab a tomato
+  - description: Grab a Tomato
     type: 1
     targetObject: uncut_tomato
-  - description: Cut the tomato
+  - description: Cut the Tomato
     type: 1
     targetObject: 'tomato '
-  - description: Grab a raw steak
+  - description: Grab a Raw Steak
     type: 1
     targetObject: rawsteak
-  - description: Put it into the pan
+  - description: Put it in the Pan
     type: 0
     targetObject: rawsteak
-  - description: hold the button to cook the steak
+  - description: Hold Button to Cook
     type: 1
     targetObject: cookedsteak
-  - description: Walk to the ingredients table
+  - description: Walk to the Ingredients Table
     type: 6
     targetObject: Table
-  - description: Grab the salt shaker
+  - description: Grab the Salt Shaker
     type: 1
     targetObject: salt_shaker
-  - description: add salt to the steak
+  - description: Add Salt to the Steak
     type: 4
     targetObject: 
-  - description: Walk to the ingredient table
+  - description: Walk to the Ingredients Table
     type: 6
     targetObject: Table
-  - description: Grab the top bun
+  - description: Grab the Top Bun
     type: 1
     targetObject: bun_top
-  - description: 'assemble all items in order: bun - cheese - steak - tomato -bun'
+  - description: Assemble the Items
     type: 5
     targetObject: 
-  - description: Put the correct burger on the plate to win
+  - description: Put the Burger on the Plate
     type: 7
     targetObject: 
