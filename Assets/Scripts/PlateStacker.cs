@@ -34,6 +34,9 @@ public class PlateStacker : MonoBehaviour
         {
             Debug.Log("Interface for Game Manager: ✅ Valid burger submitted!");
             //gameManager?.SubmitBurger(stack);
+            PlayerManager winningPlayer = GameManager.Instance.FindLocalPlayer();
+            winningPlayer.RegisterPlayerLevelComplete();
+
         }
         else
         {

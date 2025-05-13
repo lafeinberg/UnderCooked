@@ -56,12 +56,12 @@ public class GameManager : NetworkBehaviour
     public List<InstructionSet> allLevelInstructionSets;
     public InstructionSet currentLevelInstructions;
     public InstructionProgressPanel instructionProgressPanel;
-    public InstructionToolbar instructionToolbar;
+
 
     [Header("Level State Manager")]
     public int currentLevel = 1;
     private bool matchRunning = false;
-    private bool levelWinnerDetected = false;
+    private bool winnerDetected = false;
     public float proximityThreshold = 2f;
 
     public Transform[] spawnPoints;
@@ -260,9 +260,9 @@ public class GameManager : NetworkBehaviour
         player.levelComplete[currentLevel] = true;
         player.levelTimes[currentLevel] = timer;
 
-        if (!levelWinnerDetected)
+        if (!winnerDetected)
         {
-            levelWinnerDetected = true;
+            winnerDetected = true;
             winner.Value = (int)player.OwnerClientId;
             player.levelWon[currentLevel] = true;
         }
@@ -294,7 +294,7 @@ public class GameManager : NetworkBehaviour
         timer = 0f;
         matchRunning = true;
         winner.Value = -1;
-        levelWinnerDetected = false;
+        winnerDetected = false;
         if (currentLevel <= allLevelInstructionSets.Count)
         {
             currentLevelInstructions = allLevelInstructionSets[currentLevel - 1];
@@ -331,6 +331,8 @@ public class GameManager : NetworkBehaviour
         levelEndStats.text = $"Player 1 Time: {player1Time}\nPlayer 2 Time: {player2Time}";
     }
 
+    // OLD LEVEL MANAGEMENT CODE
+    /*
     public void OnNextLevel()
     {
         currentLevel++;
@@ -349,6 +351,7 @@ public class GameManager : NetworkBehaviour
             StartLevel(currentLevel);
         }
     }
+    */
 
 
     [ClientRpc]
