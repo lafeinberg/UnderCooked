@@ -1,4 +1,3 @@
-using System;
 using UnityEngine;
 using UnityEngine.XR.Interaction.Toolkit;
 using UnityEngine.XR.Interaction.Toolkit.Interactables;
@@ -31,6 +30,11 @@ public class CookableSteak : MonoBehaviour
     private InstructionType cookInstructionType = InstructionType.CookItem;
     private InstructionType dropInstructionType = InstructionType.DropItem;
 
+    [Header("Audio")]
+    [SerializeField] private AudioSource cookingAudioSource;
+    [SerializeField] private AudioClip cookingSizzleClip;
+
+
     /* UI to implement later
     
     public GameObject cookTimerUI;
@@ -43,6 +47,15 @@ public class CookableSteak : MonoBehaviour
 
     private void Awake()
     {
+
+        if (cookingAudioSource != null)
+        {
+            cookingAudioSource.clip = cookingSizzleClip;
+            cookingAudioSource.loop = true;
+            cookingAudioSource.playOnAwake = false;
+            cookingAudioSource.spatialBlend = 1f; // 3D audio
+        }
+
         // 1) Find *nearest* cook-button by tag
         var buttons = GameObject.FindGameObjectsWithTag(cookButtonTag);
         if (buttons.Length == 0)
@@ -127,7 +140,9 @@ public class CookableSteak : MonoBehaviour
                 Quaternion.identity
             );
             activeParticles.Play();
-        }
+            if (cookingAudioSource != null && !cookingAudioSource.isPlaying)
+                cookingAudioSource.Play();
+            }
     }
 
     private void OnSelectExited(SelectExitEventArgs args)
@@ -167,7 +182,7 @@ public class CookableSteak : MonoBehaviour
             StopCookingAndFinish();
     }
 
-    private void StopCookingAndFinish()
+   private void StopCookingAndFinish()
     {
         isCooking = false;
 
@@ -175,16 +190,18 @@ public class CookableSteak : MonoBehaviour
         {
             activeParticles.Stop();
             Destroy(
-              activeParticles.gameObject,
-              activeParticles.main.duration + activeParticles.main.startLifetime.constantMax
+            activeParticles.gameObject,
+            activeParticles.main.duration + activeParticles.main.startLifetime.constantMax
             );
         }
+        if (cookingAudioSource != null && cookingAudioSource.isPlaying)
+            cookingAudioSource.Stop();
 
         if (cookTimer >= cookTimeThreshold)
         {
             var prefab = cookTimer < burnTimeThreshold
-                         ? cookedSteakPrefab
-                         : burntSteakPrefab;
+                        ? cookedSteakPrefab
+                        : burntSteakPrefab;
 
             Instantiate(prefab,
                         transform.position,
