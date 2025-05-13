@@ -12,6 +12,7 @@ using Unity.Services.Lobbies.Models;
 
 public class GameManager : NetworkBehaviour
 {
+
     [Header("Start Game UI")]
     public GameObject readyUI;
     public GameObject readyButton;
@@ -22,7 +23,9 @@ public class GameManager : NetworkBehaviour
     public TextMeshProUGUI startLevelText;
 
     [Header("Win/Lose UI")]
+    [SerializeField]
     public GameObject winUI;
+    [SerializeField]
     public GameObject loseUI;
 
     [Header("Next Level UI")]
@@ -90,8 +93,8 @@ public class GameManager : NetworkBehaviour
 
     void Start()
     {
-        winUI.SetActive(false);
-        loseUI.SetActive(false);
+        //winUI.SetActive(false);
+        //loseUI.SetActive(false);
         showReadyUI.Value = false;
         nextLevelUI.SetActive(false);
         uiShown = true;
@@ -277,27 +280,29 @@ public class GameManager : NetworkBehaviour
     }
 
     [ClientRpc]
-    void ShowPlayerResultClientRpc(ulong finishedPlayerId, ulong winnerId)
+    public void ShowPlayerResultClientRpc(ulong finishedPlayerId, ulong winnerId)
     {
         Debug.Log("SHOW PLAYER RESULT");
         if (NetworkManager.Singleton.LocalClientId == finishedPlayerId)
         {
-            {
-                StartCoroutine(ShowWinLoseUI(finishedPlayerId, winnerId));
-            }
+            if (finishedPlayerId == winnerId)
+                winUI.SetActive(true);
+            else
+                loseUI.SetActive(true);
         }
     }
 
-    private System.Collections.IEnumerator ShowWinLoseUI(ulong finishedPlayerId, ulong winnerId)
+    public void ActivateWinUI()
     {
-        Debug.Log("SHOW WIN LOSE UI");
-        if (finishedPlayerId == winnerId)
-            winUI.SetActive(true);
-        else
-            loseUI.SetActive(true);
-        yield return new WaitForSeconds(4);
+        Debug.Log("activating win UI");
+        winUI.SetActive(true);
     }
 
+    public void ActivateLoseUI()
+    {
+        Debug.Log("activating lose UI");
+        loseUI.SetActive(true);
+    }
 
     public void StartLevel(int currentLevel)
     {

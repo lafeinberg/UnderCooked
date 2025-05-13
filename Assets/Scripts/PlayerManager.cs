@@ -8,6 +8,13 @@ using TMPro;
 
 public class PlayerManager : NetworkBehaviour
 {
+    public GameObject winUI;
+    public GameObject loseUI;
+    [SerializeField]
+    private ParticleSystem confettiHost;
+    [SerializeField]
+    private ParticleSystem confettiClient;
+
     [Header("Player Rig Components")]
     public Transform avatarRoot;
     public Transform xrRigHead;
@@ -38,6 +45,14 @@ public class PlayerManager : NetworkBehaviour
     public DrawLineToObj pathVisualizer;
     public DrawLineToObjClient pathVisualizerClient;
     private bool isExecutingInstruction = false;
+
+    void Awake()
+    {
+        confettiHost = GameObject.FindWithTag("ConfettiHost")
+                         ?.GetComponent<ParticleSystem>();
+        confettiClient = GameObject.FindWithTag("ConfettiClient")
+                         ?.GetComponent<ParticleSystem>();
+    }
 
     void Update()
     {
@@ -218,7 +233,6 @@ public class PlayerManager : NetworkBehaviour
         Debug.Log("current step completed");
         int instructionCount = GameManager.Instance.GetInstructionCount();
         progressBar.SetProgress((float)currentInstructionIndex / instructionCount);
-        RegisterPlayerLevelComplete();
 
         if (currentInstructionIndex < instructionCount)
         {
@@ -231,30 +245,92 @@ public class PlayerManager : NetworkBehaviour
 
     public void RegisterPlayerLevelComplete()
     {
-        Debug.Log("DONE WITH LEVEL");
-        if (IsOwner)
-        {
-            int currentLevel = GameManager.Instance.GetCurrentLevel();
-            gameComplete = true;
-            StopLocalTimer();
-            NotifyLevelCompleteServerRpc();
-        }
-
-    }
-
-    [ServerRpc(RequireOwnership = false)]
-    public void NotifyLevelCompleteServerRpc(ServerRpcParams rpcParams = default)
-    {
+        //int currentLevel = GameManager.Instance.GetCurrentLevel();
+        //levelComplete[currentLevel] = true;
+        StopLocalTimer();
         GameManager.Instance.RegisterPlayerLevelComplete(this);
     }
 
-    [ServerRpc]
-    void SubmitProgressToServerRpc()
+    // public void WinGame()
+    // {
+    //     // host instance → play host confetti
+    //     if (IsHost)
+    //     {
+    //         if (confettiHost != null)
+    //             confettiHost.Play();
+    //             StopLocalTimer();
+    //             RegisterPlayerLevelComplete();
+
+    //     }
+    //     // all other clients → play client confetti
+    //     else
+    //     {
+    //         if (confettiClient != null)
+    //             confettiClient.Play();
+    //             StopLocalTimer();
+    //             RegisterPlayerLevelComplete();
+    //     }
+    // }
+
+    public void WinGame()
     {
-        float progress = (float)currentInstructionIndex / GameManager.Instance.GetInstructionCount() * 100;
-        GameManager.Instance.UpdatePlayerProgressServerRpc(OwnerClientId, progress);
+        if (IsServer)
+        {
+            // if host itself is winning, we already have authority
+            BroadcastWinClientRpc(OwnerClientId);
+        }
+        else
+        {
+            // client tells the server “I won”
+            WinServerRpc();
+        }
     }
 
+    [ServerRpc(RequireOwnership = false)]
+    private void WinServerRpc(ServerRpcParams rpcParams = default)
+    {
+        // the server now knows that rpcParams.Receive.SenderClientId is the winner
+        BroadcastWinClientRpc(rpcParams.Receive.SenderClientId);
+    }
+
+    [ClientRpc]
+    private void BroadcastWinClientRpc(ulong winnerClientId)
+    {
+        bool amWinner = winnerClientId == NetworkManager.Singleton.LocalClientId;
+        Debug.Log($"1234{NetworkManager.Singleton.LocalClientId}");
+        Debug.Log($"1234{winnerClientId}");
+        if (amWinner)
+        {
+            if (IsHost)
+            {
+                confettiHost.Play();
+                StopLocalTimer();
+                GameManager.Instance.ActivateWinUI();
+            }
+            else
+            {
+                confettiClient.Play();
+                StopLocalTimer();
+                GameManager.Instance.ActivateWinUI();
+            }
+        }
+        else
+        {
+            if (IsHost)
+            {
+                confettiClient.Play();
+                StopLocalTimer();
+                GameManager.Instance.ActivateLoseUI();
+            }
+            else
+            {
+                confettiHost.Play();
+                StopLocalTimer();
+                GameManager.Instance.ActivateLoseUI();
+            }
+        }
+        RegisterPlayerLevelComplete();
+    }
 
 
     private IEnumerator HandleWayfindingInstruction(Instruction instruction)
