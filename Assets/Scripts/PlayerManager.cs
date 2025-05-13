@@ -34,8 +34,6 @@ public class PlayerManager : NetworkBehaviour
     public GameObject levelStartPanel;
     public GameObject levelCompletePanel;
 
-    private float currentProgress = 0f;
-
     public List<bool> levelComplete = new List<bool>();
     public List<bool> levelWon = new List<bool>();
     public List<float> levelTimes = new List<float>();
@@ -209,7 +207,8 @@ public class PlayerManager : NetworkBehaviour
         yield return new WaitForSeconds(delay);
         var instruction = GameManager.Instance.GetCurrentInstruction(currentInstructionIndex);
         instructionToolbar.ShowInstruction(instruction);
-        progressBar.SetProgress(currentProgress);
+        int instructionCount = GameManager.Instance.GetInstructionCount();
+        progressBar.SetProgress((float)currentInstructionIndex / instructionCount);
     }
 
 
@@ -241,7 +240,7 @@ public class PlayerManager : NetworkBehaviour
     {
         Debug.Log("current step completed");
         int instructionCount = GameManager.Instance.GetInstructionCount();
-        progressBar.SetProgress(currentInstructionIndex / instructionCount);
+        progressBar.SetProgress((float)currentInstructionIndex / instructionCount);
 
         if (currentInstructionIndex < instructionCount)
         {
@@ -249,10 +248,9 @@ public class PlayerManager : NetworkBehaviour
             //GameManager.Instance.UpdatePlayerProgress(this);
             instructionToolbar.ShowInstruction(GameManager.Instance.GetCurrentInstruction(currentInstructionIndex));
         }
-        else
-        {
-            RegisterPlayerLevelComplete();
-        }
+
+        //RegisterPlayerLevelComplete();
+
     }
 
     public void RegisterPlayerLevelComplete()

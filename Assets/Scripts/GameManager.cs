@@ -29,8 +29,6 @@ public class GameManager : NetworkBehaviour
     public GameObject nextLevelUI;
     public TextMeshProUGUI levelEndIntroText;
     public TextMeshProUGUI levelEndStats;
-    public GameObject nextLevelButton;
-    public TextMeshProUGUI nextLevelReadyText;
 
     [Header("Timer")]
     private float timer = 0f;
@@ -45,7 +43,7 @@ public class GameManager : NetworkBehaviour
     NetworkVariableWritePermission.Server);
     private NetworkVariable<int> winner = new NetworkVariable<int>(-1, NetworkVariableReadPermission.Everyone,
     NetworkVariableWritePermission.Server); // -1 = no one, 0 = host, 1 = client
-    private NetworkVariable<int> nextLevelReadyCount = new NetworkVariable<int>(0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
+    //private NetworkVariable<int> nextLevelReadyCount = new NetworkVariable<int>(0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
     public NetworkVariable<float> syncedGameTime = new NetworkVariable<float>(0f, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
 
     public List<PlayerManager> players = new List<PlayerManager>();
@@ -252,7 +250,7 @@ public class GameManager : NetworkBehaviour
             syncedGameTime.Value = timer;
         }
 
-        nextLevelReadyText.text = $"Players Ready: {nextLevelReadyCount.Value} / 2";
+        //nextLevelReadyText.text = $"Players Ready: {nextLevelReadyCount.Value} / 2";
     }
 
     public void RegisterPlayerLevelComplete(PlayerManager player)
@@ -281,11 +279,19 @@ public class GameManager : NetworkBehaviour
     {
         if (NetworkManager.Singleton.LocalClientId == finishedPlayerId)
         {
-            if (finishedPlayerId == winnerId)
-                winUI.SetActive(true);
-            else
-                loseUI.SetActive(true);
+            {
+                StartCoroutine(ShowWinLoseUI(finishedPlayerId, winnerId));
+            }
         }
+    }
+
+    private System.Collections.IEnumerator ShowWinLoseUI(ulong finishedPlayerId, ulong winnerId)
+    {
+        if (finishedPlayerId == winnerId)
+            winUI.SetActive(true);
+        else
+            loseUI.SetActive(true);
+        yield return new WaitForSeconds(4);
     }
 
 
@@ -306,7 +312,7 @@ public class GameManager : NetworkBehaviour
             return;
         }
 
-        ShowLevelClientRpc($"Level {currentLevel}", 4f);
+        ShowLevelClientRpc($"Ready... Set...", 4f);
         foreach (var player in players)
         {
             player.StartLevelClientRpc(currentLevel, 6f);
@@ -318,9 +324,9 @@ public class GameManager : NetworkBehaviour
     {
         Debug.Log("Level ended -- showing next level UI");
         matchRunning = false;
-        nextLevelUI.SetActive(true);
+        //nextLevelUI.SetActive(true);
 
-        levelEndIntroText.text = $"Level {currentLevel} Complete!";
+        levelEndIntroText.text = $"Game {currentLevel} Complete!";
         int player1EndMinutes = Mathf.FloorToInt(players[0].levelTimes[currentLevel] / 60);
         int player1EndSeconds = Mathf.FloorToInt(players[0].levelTimes[currentLevel] % 60);
         string player1Time = string.Format("{0}:{1:00}", player1EndMinutes, player1EndSeconds);
@@ -369,7 +375,7 @@ public class GameManager : NetworkBehaviour
         startLevelPanel.SetActive(true);
         startLevelText.text = levelName;
         yield return new WaitForSeconds(duration);
-        startLevelText.text = "Start!";
+        startLevelText.text = "Start Cooking!";
         yield return new WaitForSeconds(2);
         startLevelPanel.SetActive(false);
     }

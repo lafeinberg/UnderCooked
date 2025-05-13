@@ -2,18 +2,17 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
+using TMPro;
 
 public class ProgressBar : MonoBehaviour
 {
     [SerializeField]
     private Image ProgressBarImage;
+
+    [SerializeField]
+    private TextMeshProUGUI ProgressPercentText;
     [SerializeField]
     private float animationSpeed = 1f;
-    [SerializeField]
-    private UnityEvent<float> OnProgress;
-    [SerializeField]
-    private UnityEvent OnCompleted;
-
     private Coroutine AnimationCoroutine;
 
 
@@ -22,6 +21,7 @@ public class ProgressBar : MonoBehaviour
     */
     public void SetProgress(float targetProgress)
     {
+        Debug.Log($"SETTING PROGRESS TO {targetProgress * 100}%");
         if (!gameObject.activeSelf)
             gameObject.SetActive(true);
 
@@ -31,27 +31,33 @@ public class ProgressBar : MonoBehaviour
             {
                 StopCoroutine(AnimationCoroutine);
             }
-
             AnimationCoroutine = StartCoroutine(AnimateProgress(targetProgress));
         }
     }
 
     private IEnumerator AnimateProgress(float targetProgress)
     {
-        float time = 0;
+        float time = 0f;
         float startProgress = ProgressBarImage.fillAmount;
 
-        while (time < 1)
+        while (time < 1f)
         {
-            ProgressBarImage.fillAmount = Mathf.Lerp(startProgress, targetProgress, time);
+            float currentProgress = Mathf.Lerp(startProgress, targetProgress, time);
+            ProgressBarImage.fillAmount = currentProgress;
+            ProgressPercentText.text = $"{Mathf.RoundToInt(currentProgress * 100)}%";
             time += Time.deltaTime * animationSpeed;
-
-            OnProgress?.Invoke(ProgressBarImage.fillAmount);
             yield return null;
         }
 
         ProgressBarImage.fillAmount = targetProgress;
-        OnProgress?.Invoke(targetProgress);
-        OnCompleted?.Invoke();
+        ProgressPercentText.text = $"{Mathf.RoundToInt(targetProgress * 100)}%";
+
+        if (targetProgress >= 1f)
+            gameObject.SetActive(false);
+    }
+
+    private void EndProgress()
+    {
+        gameObject.SetActive(false);
     }
 }
