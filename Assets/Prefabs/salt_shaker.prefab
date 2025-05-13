@@ -4984,6 +4984,7 @@ GameObject:
   - component: {fileID: 2986945168304529540}
   - component: {fileID: 6434478853475800467}
   - component: {fileID: 4603457175766027473}
+  - component: {fileID: 2309278357288395291}
   m_Layer: 0
   m_Name: salt_shaker
   m_TagString: Untagged
@@ -5193,7 +5194,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 664480197
+  GlobalObjectIdHash: 3347779056
   InScenePlacedSourceGlobalObjectIdHash: 0
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
@@ -5300,3 +5301,15 @@ MonoBehaviour:
   saltParticleSystem: {fileID: 7369165176205706875}
   saltCheckPoint: {fileID: 7623043407786621376}
   saltRange: 0.1
+--- !u!114 &2309278357288395291
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5121368912848970543}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dfc0746c5b1f7d946bc456dd772ca1d4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
