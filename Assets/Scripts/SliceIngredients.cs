@@ -28,6 +28,18 @@ public class SliceIngredients : NetworkBehaviour
             if (IsOwner || IsClient) // Ensures only one request
             {
                 RequestSliceServerRpc();
+                PlayerManager closestPlayer = GameManager.Instance.FindLocalPlayer();
+                string expected = closestPlayer.GetCurrentTargetObjectName();
+
+                if (gameObject.name.ToLower().Contains(expected.ToLower()))
+                {
+                    Debug.Log($"[SliceIngredients] Successfully sliced correct ingredient: {gameObject.name}");
+                    closestPlayer.PlayerNotifyActionCompleted(InstructionType.ChopItem);
+                }
+                else
+                {
+                    Debug.Log($"[SliceIngredients] Sliced object: {gameObject.name}, but expected: {expected}. Ignored.");
+                }
             }
         }
     }
@@ -55,18 +67,7 @@ public class SliceIngredients : NetworkBehaviour
     {
         if (!IsHost) return;
 
-        PlayerManager closestPlayer = GameManager.Instance.FindLocalPlayer();
-        string expected = closestPlayer.GetCurrentTargetObjectName();
-
-        if (gameObject.name.ToLower().Contains(expected.ToLower()))
-        {
-            Debug.Log($"[SliceIngredients] Successfully sliced correct ingredient: {gameObject.name}");
-            closestPlayer.PlayerNotifyActionCompleted(InstructionType.ChopItem);
-        }
-        else
-        {
-            Debug.Log($"[SliceIngredients] Sliced object: {gameObject.name}, but expected: {expected}. Ignored.");
-        }
+        
 
         var sliced = Instantiate(
             slicedTomatoPrefab,

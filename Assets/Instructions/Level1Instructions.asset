@@ -51,10 +51,10 @@ MonoBehaviour:
     targetObject: 'tomato '
   - description: Grab a raw steak
     type: 1
-    targetObject: raw_steak
+    targetObject: rawsteak
   - description: Put it into the pan
     type: 0
-    targetObject: raw_steak
+    targetObject: rawsteak
   - description: hold the button to cook the steak
     type: 3
     targetObject: 
