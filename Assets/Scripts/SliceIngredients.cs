@@ -8,6 +8,10 @@ public class SliceIngredients : NetworkBehaviour
     [SerializeField] private int hitsToSlice = 3;
     [SerializeField] private ParticleSystem cutParticlesPrefab;
 
+    [SerializeField] private AudioSource sliceAudioSource;
+    [SerializeField] private AudioClip sliceSoundClip;
+
+
     private int hitCount = 0;
     private bool isCollidingWithKnife = false;
 
@@ -18,6 +22,13 @@ public class SliceIngredients : NetworkBehaviour
 
         isCollidingWithKnife = true;
         hitCount++;
+
+        if (sliceAudioSource != null && sliceSoundClip != null)
+        {
+            sliceAudioSource.pitch = Random.Range(0.95f, 1.05f); // slight variation
+            sliceAudioSource.PlayOneShot(sliceSoundClip);
+        }
+
 
         if (cutParticlesPrefab != null)
             SpawnCutParticles(collision.GetContact(0));
