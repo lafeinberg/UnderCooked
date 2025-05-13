@@ -286,12 +286,14 @@ public class PlayerManager : NetworkBehaviour
         {
             if (confettiHost != null)
                 confettiHost.Play();
+                StopLocalTimer();
         }
         // all other clients → play client confetti
         else
         {
             if (confettiClient != null)
                 confettiClient.Play();
+                StopLocalTimer();
         }
     }
 

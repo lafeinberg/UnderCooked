@@ -13,11 +13,7 @@ public class PlateStacker : MonoBehaviour
 
     //public GameManager gameManager;
 
-    private void Awake()
-    {
-        GetComponent<Collider>().isTrigger = false;
-        
-    }
+
 
     private void OnCollisionEnter(Collision collision)
     {
@@ -26,24 +22,44 @@ public class PlateStacker : MonoBehaviour
         if (ing == null) return;
 
         var root = ing.GetStackRoot();
-        var stack = new List<IngredientStacker>();
-        CollectStackFromRoot(root, stack);
+        var stack = new HashSet<IngredientStacker>();
+        //CollectStackFromRoot(root, stack);
+        stack = CollectStackFromRoot(root);
 
         Debug.Log($"Burger on plate with {stack.Count} ingredients.");
-        if (stack.Count >= 4) {
-            PlayerManager winningPlayer = GameManager.Instance.FindLocalPlayer();
-            winningPlayer.WinGame();
-        }
 
         if (IsValidBurger(stack))
         {
             Debug.Log("Interface for Game Manager: ✅ Valid burger submitted!");
-            return;
-
+            //gameManager?.SubmitBurger(stack);
+            PlayerManager closestPlayer = GameManager.Instance.FindLocalPlayer();
+            closestPlayer.WinGame();
         }
         else
         {
             Debug.LogWarning("❌ Invalid burger.");
+        }
+    }
+
+    HashSet<IngredientStacker> CollectStackFromRoot(IngredientStacker root)
+    {
+        var visited = new HashSet<IngredientStacker>();
+        DFS(root, visited);
+        return visited;
+    }
+
+    void DFS(IngredientStacker current, HashSet<IngredientStacker> visited)
+    {
+        if (current == null || !visited.Add(current))
+            return;
+
+        foreach (var joint in FindObjectsOfType<FixedJoint>())
+        {
+            if (joint.connectedBody == current.rb)
+            {
+                var child = joint.GetComponent<IngredientStacker>();
+                DFS(child, visited);
+            }
         }
     }
 
@@ -77,19 +93,24 @@ public class PlateStacker : MonoBehaviour
         }
     }
 
-    bool IsValidBurger(List<IngredientStacker> stack)
+    bool IsValidBurger(HashSet<IngredientStacker> stack)
     {
-        if (stack.Count != validBurgerTagOrder.Count)
-            return false;
-
-        for (int i = 0; i < stack.Count; i++)
+        foreach (var requiredTag in validBurgerTagOrder)
         {
-            string expected = validBurgerTagOrder[i];
-            string actualName = stack[i].name;
+            bool found = false;
 
-            if (!actualName.Contains(expected))
+            foreach (var item in stack)
             {
-                Debug.LogWarning($"Expected '{expected}', but got '{actualName}'");
+                if (item.name.Contains(requiredTag))
+                {
+                    found = true;
+                    break;
+                }
+            }
+
+            if (!found)
+            {
+                Debug.LogWarning($"Missing required ingredient: {requiredTag}");
                 return false;
             }
         }
