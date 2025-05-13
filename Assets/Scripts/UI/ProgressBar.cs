@@ -16,16 +16,14 @@ public class ProgressBar : MonoBehaviour
 
     private Coroutine AnimationCoroutine;
 
-    private void Start()
-    {
-        StartCoroutine(TestProgressLoop());
-    }
 
     /*
     * Set progress bar fill to represent recipe progress by giving float >0 and <1
     */
     public void SetProgress(float targetProgress)
     {
+        if (!gameObject.activeSelf)
+            gameObject.SetActive(true);
 
         if (targetProgress != ProgressBarImage.fillAmount)
         {
@@ -55,15 +53,5 @@ public class ProgressBar : MonoBehaviour
         ProgressBarImage.fillAmount = targetProgress;
         OnProgress?.Invoke(targetProgress);
         OnCompleted?.Invoke();
-    }
-
-    private IEnumerator TestProgressLoop()
-    {
-        while (true)
-        {
-            float randomProgress = Random.Range(0.2f, 1f);
-            SetProgress(randomProgress);
-            yield return new WaitForSeconds(5f);
-        }
     }
 }
