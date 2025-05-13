@@ -30,9 +30,11 @@ public class PlayerManager : NetworkBehaviour
     private Instruction currentInstruction;
 
     public InstructionToolbar instructionToolbar;
-    public Vector3 toolbarOffset = new Vector3(0f, 10f, 2f);
+    public ProgressBar progressBar;
     public GameObject levelStartPanel;
     public GameObject levelCompletePanel;
+
+    private float currentProgress = 0f;
 
     public List<bool> levelComplete = new List<bool>();
     public List<bool> levelWon = new List<bool>();
@@ -113,8 +115,6 @@ public class PlayerManager : NetworkBehaviour
         {
             Debug.LogError("[Player Manager] No XROrigin found in scene!");
         }
-
-        //instructionToolbar = FindObjectOfType<InstructionToolbar>(true);
         instructionToolbar = _XrOrigin.Camera.GetComponentInChildren<InstructionToolbar>(true);
         if (instructionToolbar == null)
         {
@@ -123,6 +123,16 @@ public class PlayerManager : NetworkBehaviour
         else
         {
             Debug.Log($"TOOLBAR FOUND IN SCENE FOR NetworkObject.OwnerClientId: {NetworkObject.OwnerClientId}");
+        }
+
+        progressBar = _XrOrigin.Camera.GetComponentInChildren<ProgressBar>(true);
+        if (progressBar == null)
+        {
+            Debug.LogError("Couldn't find progress bar in scene!");
+        }
+        else
+        {
+            Debug.Log($"Progress BAR FOUND IN SCENE FOR NetworkObject.OwnerClientId: {NetworkObject.OwnerClientId}");
         }
 
         pathVisualizer = FindObjectOfType<DrawLineToObj>();
@@ -199,6 +209,7 @@ public class PlayerManager : NetworkBehaviour
         yield return new WaitForSeconds(delay);
         var instruction = GameManager.Instance.GetCurrentInstruction(currentInstructionIndex);
         instructionToolbar.ShowInstruction(instruction);
+        progressBar.SetProgress(currentProgress);
     }
 
 
@@ -229,7 +240,10 @@ public class PlayerManager : NetworkBehaviour
     void PlayerStepCompleted()
     {
         Debug.Log("current step completed");
-        if (currentInstructionIndex < GameManager.Instance.GetInstructionCount())
+        int instructionCount = GameManager.Instance.GetInstructionCount();
+        progressBar.SetProgress(currentInstructionIndex / instructionCount);
+
+        if (currentInstructionIndex < instructionCount)
         {
             currentInstructionIndex++;
             //GameManager.Instance.UpdatePlayerProgress(this);
