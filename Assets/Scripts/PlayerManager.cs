@@ -21,6 +21,8 @@ public class LevelStats
 
 public class PlayerManager : NetworkBehaviour
 {
+    public GameObject winUI;
+    public GameObject loseUI;
     [SerializeField]
     private ParticleSystem confettiHost;
     [SerializeField]
@@ -273,28 +275,83 @@ public class PlayerManager : NetworkBehaviour
 
     public void RegisterPlayerLevelComplete()
     {
-        int currentLevel = GameManager.Instance.GetCurrentLevel();
-        levelComplete[currentLevel] = true;
+        //int currentLevel = GameManager.Instance.GetCurrentLevel();
+        //levelComplete[currentLevel] = true;
         StopLocalTimer();
         GameManager.Instance.RegisterPlayerLevelComplete(this);
     }
 
+    // public void WinGame()
+    // {
+    //     // host instance → play host confetti
+    //     if (IsHost)
+    //     {
+    //         if (confettiHost != null)
+    //             confettiHost.Play();
+    //             StopLocalTimer();
+    //             RegisterPlayerLevelComplete();
+
+    //     }
+    //     // all other clients → play client confetti
+    //     else
+    //     {
+    //         if (confettiClient != null)
+    //             confettiClient.Play();
+    //             StopLocalTimer();
+    //             RegisterPlayerLevelComplete();
+    //     }
+    // }
+
     public void WinGame()
     {
-        // host instance → play host confetti
-        if (IsHost)
+        if (IsServer)
         {
-            if (confettiHost != null)
-                confettiHost.Play();
-                StopLocalTimer();
+            // if host itself is winning, we already have authority
+            BroadcastWinClientRpc(OwnerClientId);
         }
-        // all other clients → play client confetti
         else
         {
-            if (confettiClient != null)
+            // client tells the server “I won”
+            WinServerRpc();
+        }
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    private void WinServerRpc(ServerRpcParams rpcParams = default)
+    {
+        // the server now knows that rpcParams.Receive.SenderClientId is the winner
+        BroadcastWinClientRpc(rpcParams.Receive.SenderClientId);
+    }
+
+    [ClientRpc]
+    private void BroadcastWinClientRpc(ulong winnerClientId) {
+        bool amWinner = winnerClientId == NetworkManager.Singleton.LocalClientId;
+        Debug.Log($"1234{NetworkManager.Singleton.LocalClientId}");
+        Debug.Log($"1234{winnerClientId}");
+        if (amWinner) {
+            if (IsHost) {
+                confettiHost.Play();
+                StopLocalTimer();
+                GameManager.Instance.ActivateWinUI();
+            } 
+            else {
                 confettiClient.Play();
                 StopLocalTimer();
+                GameManager.Instance.ActivateWinUI();
+            } 
+        } else {
+            if (IsHost) {
+                confettiClient.Play();
+                StopLocalTimer();
+                GameManager.Instance.ActivateLoseUI();
+            } 
+            else {
+                confettiHost.Play();
+                StopLocalTimer();
+                GameManager.Instance.ActivateLoseUI();
+            }  
         }
+        RegisterPlayerLevelComplete();
     }
 
 

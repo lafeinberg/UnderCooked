@@ -12,6 +12,7 @@ using Unity.Services.Lobbies.Models;
 
 public class GameManager : NetworkBehaviour
 {
+    
     [Header("Start Game UI")]
     public GameObject readyUI;
     public GameObject readyButton;
@@ -22,7 +23,9 @@ public class GameManager : NetworkBehaviour
     public TextMeshProUGUI startLevelText;
 
     [Header("Win/Lose UI")]
+    [SerializeField]
     public GameObject winUI;
+    [SerializeField]
     public GameObject loseUI;
 
     [Header("Next Level UI")]
@@ -89,8 +92,8 @@ public class GameManager : NetworkBehaviour
 
     void Start()
     {
-        winUI.SetActive(false);
-        loseUI.SetActive(false);
+        //winUI.SetActive(false);
+        //loseUI.SetActive(false);
         showReadyUI.Value = false;
         nextLevelUI.SetActive(false);
         uiShown = true;
@@ -277,7 +280,7 @@ public class GameManager : NetworkBehaviour
     }
 
     [ClientRpc]
-    void ShowPlayerResultClientRpc(ulong finishedPlayerId, ulong winnerId)
+    public void ShowPlayerResultClientRpc(ulong finishedPlayerId, ulong winnerId)
     {
         if (NetworkManager.Singleton.LocalClientId == finishedPlayerId)
         {
@@ -288,6 +291,15 @@ public class GameManager : NetworkBehaviour
         }
     }
 
+    public void ActivateWinUI(){
+        Debug.Log("activating win UI");
+        winUI.SetActive(true);
+    }
+
+    public void ActivateLoseUI(){
+        Debug.Log("activating lose UI");
+        loseUI.SetActive(true);
+    }
 
     public void StartLevel(int currentLevel)
     {

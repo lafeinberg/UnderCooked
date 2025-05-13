@@ -46,6 +46,8 @@ TagManager:
   - Tool
   - ConfettiHost
   - ConfettiClient
+  - winUI
+  - loseUI
   layers:
   - Default
   - TransparentFX
