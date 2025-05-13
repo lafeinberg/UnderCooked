@@ -6303,6 +6303,8 @@ MonoBehaviour:
   validBurgerTagOrder:
   - bun_bottom
   - cheese
+  - steak
+  - tomato
   - bun_top
 --- !u!114 &391625556
 MonoBehaviour:

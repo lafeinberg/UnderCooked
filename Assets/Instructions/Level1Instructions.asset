@@ -73,7 +73,7 @@ MonoBehaviour:
   - description: Grab the top bun
     type: 1
     targetObject: bun_top
-  - description: 'assemble all items in order: bun - steak - cheese - tomato -bun'
+  - description: 'assemble all items in order: bun - cheese - steak - tomato -bun'
     type: 5
     targetObject: 
   - description: Put the correct burger on the plate to win
