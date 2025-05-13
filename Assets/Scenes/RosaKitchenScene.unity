@@ -19063,8 +19063,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: Player 1
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 97d8dcf452e2043ee98d364c2396cf87, type: 2}
-  m_sharedMaterial: {fileID: -5842115358040328902, guid: 97d8dcf452e2043ee98d364c2396cf87, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 6f1b8b92bc36d48ba8ecfa07a854fe7a, type: 2}
+  m_sharedMaterial: {fileID: -94174499062122243, guid: 6f1b8b92bc36d48ba8ecfa07a854fe7a, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -23522,8 +23522,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: Player 2
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 97d8dcf452e2043ee98d364c2396cf87, type: 2}
-  m_sharedMaterial: {fileID: -5842115358040328902, guid: 97d8dcf452e2043ee98d364c2396cf87, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -29863,8 +29863,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: CHEF REPORT
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 97d8dcf452e2043ee98d364c2396cf87, type: 2}
-  m_sharedMaterial: {fileID: -5842115358040328902, guid: 97d8dcf452e2043ee98d364c2396cf87, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -29938,17 +29938,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1515835721}
   m_CullTransparentMesh: 1
---- !u!114 &1526684068 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 4098067800722281370, guid: 3d7d3cd53f6b848159c88d5da17d207b, type: 3}
-  m_PrefabInstance: {fileID: 269058739}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4fa16032a37e4449aaa5a8826e6c6828, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1001 &1539751366
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -30408,6 +30397,8 @@ MonoBehaviour:
   nextLevelUI: {fileID: 2053315404}
   levelEndIntroText: {fileID: 104321015}
   levelEndStats: {fileID: 1990851926}
+  nextLevelButton: {fileID: 0}
+  nextLevelReadyText: {fileID: 0}
   syncedGameTime:
     m_InternalValue: 0
   players: []
@@ -30418,8 +30409,7 @@ MonoBehaviour:
   currentLevelInstructions: {fileID: 0}
   instructionProgressPanel: {fileID: 0}
   currentLevel: 1
-  player1ProgressBar: {fileID: 1526684068}
-  player2ProgressBar: {fileID: 1832012030}
+  proximityThreshold: 2
   spawnPoints:
   - {fileID: 275002461}
   - {fileID: 1490144944}
@@ -36658,17 +36648,6 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 4706622445118273757, guid: 561eb21bc78421d40be38dbb862102f2, type: 3}
   m_PrefabInstance: {fileID: 1825941342}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &1832012030 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 4098067800722281370, guid: 3d7d3cd53f6b848159c88d5da17d207b, type: 3}
-  m_PrefabInstance: {fileID: 1539751366}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4fa16032a37e4449aaa5a8826e6c6828, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1001 &1834767668
 PrefabInstance:
   m_ObjectHideFlags: 0

@@ -236,7 +236,7 @@ public class PlayerManager : NetworkBehaviour
 
         if (currentInstructionIndex < instructionCount)
         {
-            SubmitProgressToServerRpc();
+            GameManager.Instance.UpdatePlayerProgressServerRpc(OwnerClientId, (float)currentInstructionIndex / instructionCount);
             currentInstructionIndex++;
             instructionToolbar.ShowInstruction(GameManager.Instance.GetCurrentInstruction(currentInstructionIndex));
         }
