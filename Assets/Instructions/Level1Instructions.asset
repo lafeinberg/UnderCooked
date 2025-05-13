@@ -22,7 +22,7 @@ MonoBehaviour:
   - description: Walk to the assembly counter
     type: 6
     targetObject: Assembly
-  - description: 'Drop both burger buns onto the plate '
+  - description: 'Drop the bun onto the plate '
     type: 0
     targetObject: bun_bottom
   - description: Walk to the fridge
@@ -31,42 +31,51 @@ MonoBehaviour:
   - description: Grab a cheese
     type: 1
     targetObject: uncut_cheese
-  - description: Cut it
+  - description: Cut the cheese
     type: 2
     targetObject: cheese
-  - description: cook the steak
-    type: 3
-    targetObject: 
-  - description: add salt to the steak
-    type: 4
-    targetObject: 
-  - description: assemble items
-    type: 5
-    targetObject: 
-  - description: 'Lift the patty onto the spatula '
-    type: 1
-    targetObject: 
   - description: Walk to the assembly counter
     type: 6
     targetObject: Assembly
-  - description: Drop the patty onto the bottom burger bun
+  - description: Put the cheese onto the buttom bun to assemble them
+    type: 5
+    targetObject: 
+  - description: Walk to the fridge
+    type: 6
+    targetObject: Fridge
+  - description: Grab a tomato
+    type: 1
+    targetObject: uncut_tomato
+  - description: Cut the tomato
+    type: 1
+    targetObject: 'tomato '
+  - description: Grab a raw steak
+    type: 1
+    targetObject: raw_steak
+  - description: Put it into the pan
     type: 0
+    targetObject: raw_steak
+  - description: hold the button to cook the steak
+    type: 3
     targetObject: 
   - description: Walk to the ingredients table
     type: 6
     targetObject: Table
-  - description: Grab a cheese slice
+  - description: Grab the salt shaker
     type: 1
+    targetObject: salt_shaker
+  - description: add salt to the steak
+    type: 4
     targetObject: 
-  - description: Walk to the assembly counter
+  - description: Walk to the ingredient table
     type: 6
-    targetObject: Assembly
-  - description: Drop the cheese on top of the patty
-    type: 0
-    targetObject: 
+    targetObject: Table
   - description: Grab the top bun
     type: 1
+    targetObject: bun_top
+  - description: 'assemble all items in order: bun - steak - cheese - tomato -bun'
+    type: 5
     targetObject: 
-  - description: Place on top of cheese patty
-    type: 0
+  - description: Put the correct burger on the plate to win
+    type: 7
     targetObject: 

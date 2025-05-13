@@ -402,7 +402,9 @@ public class GameManager : NetworkBehaviour
 
     public PlayerManager FindLocalPlayer()
     {
-        foreach (var player in players)
+
+        PlayerManager[] allPlayers = FindObjectsOfType<PlayerManager>();
+        foreach (var player in allPlayers)
         {
             if (player.IsOwner)
             {
