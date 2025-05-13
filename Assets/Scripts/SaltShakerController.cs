@@ -13,6 +13,12 @@ public class SaltShakerController : MonoBehaviour
 
     public Transform saltCheckPoint;
     public float saltRange = 0.1f;
+
+    public AudioSource saltAudioSource;
+    public AudioClip saltShakeClip;
+
+
+
     void Awake()
     {
         grabInteractable = GetComponent<XRGrabInteractable>();
@@ -22,7 +28,16 @@ public class SaltShakerController : MonoBehaviour
         {
             Debug.LogWarning("Salt particle system not assigned!");
         }
+
+        if (saltAudioSource != null)
+        {
+            saltAudioSource.clip = saltShakeClip;
+            saltAudioSource.loop = true;
+            saltAudioSource.playOnAwake = false;
+            saltAudioSource.spatialBlend = 1f; // 3D audio for realism
+        }
     }
+    
 
     void Update()
     {
@@ -33,23 +48,35 @@ public class SaltShakerController : MonoBehaviour
             if (verticalSpeed > verticalSpeedThreshold)
             {
                 if (!saltParticleSystem.isPlaying)
-                { 
+                {
                     saltParticleSystem.Play();
                     TrySaltTarget();
+                }
+
+                if (saltAudioSource != null && !saltAudioSource.isPlaying)
+                {
+                    saltAudioSource.Play();
                 }
             }
             else
             {
                 if (saltParticleSystem.isPlaying)
                     saltParticleSystem.Stop();
+
+                if (saltAudioSource != null && saltAudioSource.isPlaying)
+                    saltAudioSource.Stop();
             }
         }
         else
         {
             if (saltParticleSystem != null && saltParticleSystem.isPlaying)
                 saltParticleSystem.Stop();
+
+            if (saltAudioSource != null && saltAudioSource.isPlaying)
+                saltAudioSource.Stop();
         }
     }
+
 
     void TrySaltTarget()
     {
