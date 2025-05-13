@@ -50,7 +50,7 @@ TagManager:
   - HiddenMesh
   - Water
   - UI
-  - 
+  - CameraUI
   - Mirror
   - 
   - Ingredient
@@ -79,4 +79,10 @@ TagManager:
   m_SortingLayers:
   - name: Default
     uniqueID: 0
+    locked: 0
+  - name: CameraUI
+    uniqueID: 4821635
+    locked: 0
+  - name: 
+    uniqueID: 1186463395
     locked: 0
