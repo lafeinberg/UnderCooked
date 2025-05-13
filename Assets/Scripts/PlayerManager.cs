@@ -50,7 +50,7 @@ public class PlayerManager : NetworkBehaviour
         int seconds = Mathf.FloorToInt(matchTime % 60);
         localTimerUI.text = $"{minutes}:{seconds:00}";
 
-        if (matchTime > 5f)
+        if (matchTime > 2f)
         {
             PlayerStepCompleted();
         }
@@ -213,7 +213,7 @@ public class PlayerManager : NetworkBehaviour
 
     }
 
-    void PlayerStepCompleted()
+    public void PlayerStepCompleted()
     {
         Debug.Log("current step completed");
         int instructionCount = GameManager.Instance.GetInstructionCount();
@@ -231,9 +231,20 @@ public class PlayerManager : NetworkBehaviour
 
     public void RegisterPlayerLevelComplete()
     {
-        int currentLevel = GameManager.Instance.GetCurrentLevel();
-        gameComplete = true;
-        StopLocalTimer();
+        Debug.Log("DONE WITH LEVEL");
+        if (IsOwner)
+        {
+            int currentLevel = GameManager.Instance.GetCurrentLevel();
+            gameComplete = true;
+            StopLocalTimer();
+            NotifyLevelCompleteServerRpc();
+        }
+
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    public void NotifyLevelCompleteServerRpc(ServerRpcParams rpcParams = default)
+    {
         GameManager.Instance.RegisterPlayerLevelComplete(this);
     }
 

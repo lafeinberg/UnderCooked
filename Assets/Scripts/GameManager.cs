@@ -1,4 +1,4 @@
-Ok does This work // ================================
+// ================================
 // 🎮 Multiplayer Plate Placement Game (Step 1: Ready System)
 // ================================
 using System.Collections.Generic;
@@ -63,7 +63,7 @@ public class GameManager : NetworkBehaviour
     private bool winnerDetected = false;
 
     public ProgressBar player1ProgressBar;
-    public ProgressBar player1ProgressBar;
+    public ProgressBar player2ProgressBar;
 
     public Transform[] spawnPoints;
     public static GameManager Instance;
@@ -253,7 +253,6 @@ public class GameManager : NetworkBehaviour
             syncedGameTime.Value = timer;
         }
 
-        //nextLevelReadyText.text = $"Players Ready: {nextLevelReadyCount.Value} / 2";
     }
 
     public void RegisterPlayerLevelComplete(PlayerManager player)
@@ -280,6 +279,7 @@ public class GameManager : NetworkBehaviour
     [ClientRpc]
     void ShowPlayerResultClientRpc(ulong finishedPlayerId, ulong winnerId)
     {
+        Debug.Log("SHOW PLAYER RESULT");
         if (NetworkManager.Singleton.LocalClientId == finishedPlayerId)
         {
             {
@@ -290,6 +290,7 @@ public class GameManager : NetworkBehaviour
 
     private System.Collections.IEnumerator ShowWinLoseUI(ulong finishedPlayerId, ulong winnerId)
     {
+        Debug.Log("SHOW WIN LOSE UI");
         if (finishedPlayerId == winnerId)
             winUI.SetActive(true);
         else
